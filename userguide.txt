@@ -1,0 +1,2318 @@
+
+  1: Introduction
+
+  Welcome to fruitbox, a customisable, Retro MP3 Jukebox for the Raspberry Pi.
+  
+  fruitbox attempts to emulate the operation of classic jukeboxes, by providing a music player which operates 
+  on the principle of presenting songs on title strips, in which the user can select a song by turning 
+  through pages of title strips, and selecting individual songs by entering a unique code for that song, 
+  which is then entered into a play queue.
+  
+  The look and feel of fruitbox is provided by 'skins', which are human readable text files which can be 
+  created and modified by the user to create an almost infinite number of different jukebox styles.
+  
+  fruitbox provides many customisable features, which are described in the 'Configuration (Skin) File' 
+  sections of this user guide.  A very brief (and by no means exhaustive) summary of its capabilities are...
+  
+  -> MP3 or OGV (video) playback
+  -> MP3 playback from local files or URL streams (internet Radio)
+  -> Singles or Albums mode
+  -> Coin or Freeplay mode
+  -> Controls easily mappable to keyboards, USB controllers, GPIO, mouse or touch screens
+  -> Random song play (attract mode) with preview and fade effects
+  -> Output of Jukebox status via GPIO and/or text files for external status
+  -> Generation of title strip images for printing
+  
+  fruitbox is free for non-commercial use. If you enjoy using fruitbox, and would like to encourage future 
+  development, please consider making a donation to the author at https://paypal.me/rpifruitbox
+
+
+  2: Starting Up
+
+  fruitbox is intended to be run directly from the command line for maximum performance.
+  
+  See section 'Command Line Options' for startup options.
+
+
+  3: Operation
+
+  To run fruitbox, from the command line goto the installation directory and type ./fruitbox
+  
+  fruitbox will then read the skin list in the [skins] section of the fruitbox.ini file and present you 
+  with a skin chooser to allow you to select your skin (unless there's only one skin defined in the [skins] 
+  section.  The skin chooser can be bypassed if you want to load a particular skin immediately by using 
+  the '--skin' command line option and specifying a skin configuration file directly.  For example ...
+  
+   ./fruitbox --skin skins/Wurly/fruitbox.cfg
+  
+  See section 'Configuration (Skin) Files' for more detail about the contents of these files.  After the 
+  configuration file has been read, fruitbox will create the song database by searching through the MusicPath 
+  directories (see section 'Database Creation').  When the database has been read, fruitbox will start!
+  
+  Song title strips are moved using the 'Left' and 'Right' buttons, and songs are selected using the select 
+  keys.  Once a song is selected, it is added to the play queue.  If no song is playing, the song at the 
+  top of the play queue is 'loaded', played, and then 'unloaded'.
+  
+  Control inputs (buttons) can be re-defined via an on0screen menu or direcrly editing the [buttons] section 
+  of the fruitbox ini file.
+
+
+  4: Command Line Options
+
+  fruitbox takes the following command line parameters...
+
+
+  4.1: --help
+
+    Show basic help and version information.
+
+
+  4.2: --version                   
+
+    Reports the version number.
+
+
+  4.3: --skin <filename>           
+
+    This option determines which skin (configuration file) is used.  If omitted, then fruitbox will use the 
+    [skins] section in the ini file to determine which skin to use.  If more than one skin is defined in 
+    the [skins] section, then fruitbox will allow the user to choose a skin from an on-screen menu.
+
+
+  4.4: --ini <filename>            
+
+    Name of initialisation file (defaults to 'fruitbox.ini' if not specified). This file contains all the 
+    non-skin specific fruitbox parameters.
+
+
+  4.5: --music-path <filepath>     
+
+    Use the specified music path instead of the one specified in the skin or ini files.  Note that the --music-path 
+    option can be specified multiple times if the user wishes to construct the database from multiple sources.
+
+
+  4.6: --user-guide                
+
+    Create this user-guide to file "userguide.txt".
+
+
+  4.7: --debug-song-nums           
+
+    Show select code alongside song entries.
+
+
+  4.8: --no-database-refresh       
+
+    Normally fruitbox will refresh the database if any database files (fruitbox.db) have a modification time 
+    earler than the contents of the directories they are in.  This option disables this check, so it is up 
+    to the user to delete the database file(s) in order for them to be refreshed.
+
+
+  4.9: --load-playlist <filename>  
+
+    Loads a playlist file and populates the play queue with the songs in it; fruitbox will begin playing 
+    the songs after it has started up.
+
+
+  4.10: --save-playlist <filename>  
+
+    When fruitbox exits (by the user pressing the 'Quit' button), this option saves the contents of the play 
+    queue (and currently playing song) to the specified file.  This can subsequently be loaded back into 
+    fruitbox using the '--load-playlist' command line argument.  The playlist file contains a list of song 
+    filenames which can easily be edited by hand to modify the playlist as required.
+
+
+  4.11: --dump-title-strips         
+
+    This option causes every title strip to be written to a unique png image file. fruitbox will then quit 
+    without running.  If fruitbox is used in a real jukebox which has real (paper) title strips and not on-screen 
+    ones, then this can be used to generate the title strips with real song data for printing out.  The user 
+    can modify the style and contents of the title strips in the usual way using skin parameters. In order 
+    to supress the displaying of the actual title strips on the screen, you can just set the "Visible" flag 
+    of each title strip to "No".
+    
+    Note that the --dump-title-strips option must be used in conjunction with a specified skin (--skin option) 
+    since the title strips are defined in the skin.
+
+
+  4.12: --no-scale                  
+
+    Normally fruitbox will scale (resize) the skin to the display, so no matter what its size, it will always 
+    fit exactly.  This option turns off the scaling so the skin will be shown at its original size (useful 
+    for debugging skin designs).  The skin will be centered on the display.  If the skin is smaller than 
+    the display then the skin will be surrounded by a black border, but if the skin is larger than the display, 
+    the outer edges of the skin will not be visible.
+
+
+  4.13: --rotate <angle>            
+
+    This option allows the display to be rotated by <angle> degrees.  Please note that if using a touch based 
+    skin, this will affect operation of the touch co-ordinates and the skin may have to be modified.
+
+
+  5: Initialisation File
+
+  When starting up, fruitbox looks for an initialisation file (default 'fruitbox.ini') in the same directory 
+  it is run from, which contains settings which are not skin-specific.  The command line option --ini can 
+  be used to specify an alternative ini file.  If no ini file is found, it will be created, and you can 
+  manually edit it later.  The following list shows each parameter in each section.  Note that some of 
+  these parameters can also be changed directly from the main menu (accessible via the 'Menu' button). 
+  Note that entries marked with a '*' means that these groups / parameters can be defined multiple times.
+  
+  Note also that if a touchscreen is detected and the [touch screen] section is not defined (or incomplete), 
+  the touch screen calibration is automatically run.
+
+      [general]
+      MusicPath *                   <filename> of path to music files (mp3, ogv, m3u, pls).  Can contain sub-directories.
+
+      CustomMP3Tag                  <name> of an MP3 ID3v2 tag the user wishes to extract to a song's 'Custom' field (e.g. "TCON" is content type)
+                                    Note: this is only used during database file *creation*
+      MaxPlaylistLength             <number> Maximum number of songs which can be stored in the coming up queue
+      LoopPlaylist                  <yes|no>
+                                    Yes : a song is added to the back of the play queue when it has finished playing (credits permitting)
+      IgnoreArtistPrefixThe         <yes|no>
+                                    Yes : ignore 'The ' beginning word in artist names
+      SongHistoryDepth              <number> Determines the search range of number of previously played songs to ensure
+                                    no repeated songs are chosen in Auto play or Random selection.
+                                    If not specified or set to zero, fruitbox will only check for
+                                    repeated songs from within the play queue
+      SongHistoryIncludeUserSelection<yes|no> User selection is included or excluded from the history search
+      SongVolume                    <volume> Initial song volume (0..100)
+      SongVolumeStep                <step> Song volume step (0..100) (amount changed for VolumeUp / VolumeDown)
+      ReplayGain                    <none|track|album> (automatic gain adjustment - requires MP3 ReplayGain tag data)
+      FreePlay                      <yes|no>
+                                    Yes : Credits/coins are not required to add a song to the play queue
+      CreditsPerCoin1               <number> of song credits added when a coin is inserted
+      CreditsPerCoin2               <number> of song credits added when a coin is inserted
+      CreditsPerCoin3               <number> of song credits added when a coin is inserted
+      CreditsPerCoin4               <number> of song credits added when a coin is inserted
+      CreditsPerCoin5               <number> of song credits added when a coin is inserted
+      CreditsPerCoin6               <number> of song credits added when a coin is inserted
+      CreditsPerSong                <number> of song credits required to play one song
+      MenuColour                    <r> <g> <b> Modify the on-screen menu colour
+
+      [attract mode]
+      Enable                        <yes|no>
+                                    Yes : a random song is played if the play queue is empty and no songs are playing
+      Choice                        <random|sorted>
+                                    Determines if the songs in attract mode are selected randomly or in the order in which they are sorted
+      Interval                      <time> [ticks|seconds|minutes|hours] The time between a random song being selected and played after the last song has finished playing
+      MaxVolume                     <0 to 100> Maximum volume of auto played song (with respect to current volume level)
+      FadeIn                        <time> [ticks|seconds|minutes|hours] Length of fade in time of auto play song (0 = no fade in)
+      FadeOut                       <time> [ticks|seconds|minutes|hours] Length of fade out time of auto play song (0 = no fade out)
+      FadeInPosition                <time> [ticks|seconds|minutes|hours] Start time of auto play song
+      FadeOutPosition               <time> [ticks|seconds|minutes|hours] Stop time of auto play song
+      SkipLoad                      <yes|no>
+                                    Yes : Auto played songs don't invoke load / unload sequences
+
+      [skins]
+      File *                        <filename> of skin configuration file
+
+      [buttons]
+      Quit                          <name> of button (quit fruitbox)
+      Coin1                         <name> of button (insert coin)
+      Coin2                         <name> of button (insert coin)
+      Coin3                         <name> of button (insert coin)
+      Coin4                         <name> of button (insert coin)
+      Coin5                         <name> of button (insert coin)
+      Coin6                         <name> of button (insert coin)
+      VolUp                         <name> of button (change volume)
+      VolDown                       <name> of button (change volume)
+      Random                        <name> of button (select random song)
+      Select                        <name> of button (play selected song)
+      Skip                          <name> of button (stop current song)
+      Pause                         <name> of button (pause/unpause currently playing song)
+      Up                            <name> of button (joystick selector)
+      Down                          <name> of button (joystick selector)
+      Left                          <name> of button (move title_strips/joystick selector)
+      Right                         <name> of button (move title_strips/joystick selector)
+      LeftScreen                    <name> of button (move title_strips by 'ScreenJump' amount)
+      RightScreen                   <name> of button (move title_strips by 'ScreenJump' amount)
+      LeftSort                      <name> of button (move title_strips by last 'SortSongsBy' value)
+      RightSort                     <name> of button (move title_strips by last 'SortSongsBy' value)
+      AttractMode                   <name> of button (toggle Auto (aka Attract) mode)
+      LoopQueue                     <name> of button (toggle Loop mode)
+      FreePlay                      <name> of button (toggle Freeplay mode)
+      ClearQueue                    <name> of button (empty play queue)
+      Mute                          <name> of button (volume mute)
+      PowerOff                      <name> of button (power off)
+      Select0                       <name> of button (song selection)
+      Select1                       <name> of button (song selection)
+      Select2                       <name> of button (song selection)
+      Select3                       <name> of button (song selection)
+      Select4                       <name> of button (song selection)
+      Select5                       <name> of button (song selection)
+      Select6                       <name> of button (song selection)
+      Select7                       <name> of button (song selection)
+      Select8                       <name> of button (song selection)
+      Select9                       <name> of button (song selection)
+      SelectA                       <name> of button (song selection)
+      SelectB                       <name> of button (song selection)
+      SelectC                       <name> of button (song selection)
+      SelectD                       <name> of button (song selection)
+      SelectE                       <name> of button (song selection)
+      SelectF                       <name> of button (song selection)
+      SelectG                       <name> of button (song selection)
+      SelectH                       <name> of button (song selection)
+      SelectI                       <name> of button (song selection)
+      SelectJ                       <name> of button (song selection)
+      SelectK                       <name> of button (song selection)
+      SelectL                       <name> of button (song selection)
+      SelectM                       <name> of button (song selection)
+      SelectN                       <name> of button (song selection)
+      SelectO                       <name> of button (song selection)
+      SelectP                       <name> of button (song selection)
+      SelectQ                       <name> of button (song selection)
+      SelectR                       <name> of button (song selection)
+      SelectS                       <name> of button (song selection)
+      SelectT                       <name> of button (song selection)
+      SelectU                       <name> of button (song selection)
+      SelectV                       <name> of button (song selection)
+      SelectW                       <name> of button (song selection)
+      SelectX                       <name> of button (song selection)
+      SelectY                       <name> of button (song selection)
+      SelectZ                       <name> of button (song selection)
+      Flag1                         <name> of button (toggle status flag)
+      Flag2                         <name> of button (toggle status flag)
+      Flag3                         <name> of button (toggle status flag)
+      Flag4                         <name> of button (toggle status flag)
+      Menu                          <name> of button (fruitbox menu)
+      Search                        <name> of button (song search/filter)
+      Mouse                         <name> of button (mouse select)
+      Screenshot                    <name> of button (take screenshot)
+
+      [touch screen]
+      Enable                        <yes|no>
+                                    Yes : touch screen control is enabled
+      TopLeft                       <x> <y> (the touch co-ordinates for top left of touch display)
+      BottomRight                   <x> <y> (the touch co-ordinates for bottom right of touch display)
+
+      [mouse]
+      Enable                        <yes|no>
+                                    Yes : mouse control is enabled
+      Bitmap                        <filename> of graphic image (bmp, png, tga, jpg, pcx)
+      Size                          <width> [dynamic] <height> [dynamic] (in pixels)
+      Angle                         <angle> [dynamic] of object in degrees (0..359)
+      Tint                          <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
+      HorizontalFlip                <yes|no> flip object horizontally
+      VerticalFlip                  <yes|no> flip object vertically
+      HotSpot                       <x> <y> (offset in pixels from top left corner of mouse pointer which corresponds to the click position)
+      Sensitivity                   <0.0 .. > sensitivity of mouse movement (1.0 nominal, higher is more sensitive)
+      HideAfter                     <time> [ticks|seconds|minutes|hours] (Hide inactive mouse pointer after this time. 0 = don't hide)
+      DynamicEnableFlag             <1..4> enable dynamic parameters using status flag 1..4
+
+      [joystick]
+      Enable                        <yes|no>
+                                    Yes : joystick control is enabled
+      DisableTitleStripFlip         <yes|no>
+                                    Yes : Title Strip flipping is prevented using left/right in joystick mode
+      Bitmap                        <filename> of graphic image (bmp, png, tga, jpg, pcx)
+      Size                          <width> [dynamic] <height> [dynamic] (in pixels)
+      Angle                         <angle> [dynamic] of object in degrees (0..359)
+      Tint                          <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
+      HorizontalFlip                <yes|no> flip object horizontally
+      VerticalFlip                  <yes|no> flip object vertically
+      Offset                        <x> <y> (offset in pixels from top left corner of joystick highlight in song title region)
+      DynamicEnableFlag             <1..4> enable dynamic parameters using status flag 1..4
+
+
+  6: Skin Selection
+
+  If fruitbox is run with the --skin <file> command line option, that skin will be immediately loaded and 
+  used.  If no --skin option is specified, fruitbox will invoke the skin chooser for you to select a skin 
+  from the list of skins specified in the [skins] section of the ini file.  If the [skins] list contains 
+  only one entry, then the skin chooser is not invoked and the skin immediately loaded, in the same way 
+  as if it were specified from the --skin command line argument.
+
+
+  7: Database Creation
+
+  Once fruitbox has read the skin file and found no problems, it will try to load the music database.  
+  The database is built from multiple 'fruitbox.db' files which are created in each sub-directory in the 
+  MusicPath(s) which contain music files (mp3, ogv, m3u, pls). Each fruitbox.db file contains a list of 
+  music files in that directory, along with their extracted metadata (mp3 tags). If fruitbox finds music 
+  files without an accompanying fruitbox.db file, it will create a fruitbox.db file in that directory. 
+  This may take some time as fruitbox extracts the metadata from the music file(s), but only needs to be 
+  done once, so subsequent fruitbox start-ups will be much faster.  If fruitbox detects that an existing 
+  fruitbox.db file has been modified earlier than the directory it is in (for example if music files have 
+  been added or removed), it will automatically refresh the fruitbox.db file (unless the --no-database-refresh 
+  command line option is specified).
+  
+  MusicPath(s) can be specified in one of three places; fruitbox ini file, skin configuration file or --music-path 
+  command line option(s).  They can be defined in more than one place, but the --music-path option overrides 
+  the skin configuration file, which in turn overrides the fruitbox ini file.
+  
+  The database files can be edited by hand in a standard text editor if you have small changes to make 
+  or are feeling brave!  This can be useful if you wish to tweak the song details, without having to re-generate 
+  the database from scratch.  Note that the song order in the database files are irrelevant; after fruitbox 
+  has read the songs from the database files it will sort them according to the 'SortSongsBy' configuration 
+  parameter(s).
+
+
+  7.1: MP3 File Support
+
+    During database creation, any file in the MusicPath (or sub-directories) with .mp3 extension will be 
+    added to the database. fruitbox will extract the mp3 metadata tag values (title, artist, album, etc.) 
+    from the files and store these details in the database files for faster subsequent start-up of fruitbox.
+
+
+  7.2: Video (OGV) File Support
+
+    fruitbox can play video files if they are in ogv format (Vorbis + Theora). During database creation, 
+    any file in the MusicPath (or sub-directories) with .ogv extension will be added to the database. fruitbox 
+    cannot extract metadata from the ogv files, so will extract the artist and song title name from the filename 
+    if the filename (excluding .ogv extension) has the format "Artist - Title", and set all other fields 
+    (album, genre, etc) to Unknown. The user can subsequently edit the database file to manually add meaningful 
+    names to the unknown fields.
+    
+    Any video format can be converted to ogv format using for example ffmpeg with the following options for 
+    specifying the video bitrate and video picture size...
+    
+     ffmpeg -i MyVideo.mp4 -b:v 2M -vf scale=640x480 MyVideo.ogv
+    
+     NOTE: ffmpeg versions above 4.1 onwards seem to cause corruption of the video.  It is recommended  
+          to use ffmpeg version 4.0.2 (or older) ... see: https://www.videohelp.com/software/ffmpeg/old-versions
+    
+    Since the video decoding process is quite CPU intensive, it is recommended that a Quad core Pi is used 
+    (Model 2 or 3) with a good PSU (at least 2 Amps) when running fruitbox and skins with video content, 
+    and the display resolution is kept low (less than 1024x768).
+
+
+  7.3: MP3 Stream (Internet Radio) Support
+
+    fruitbox can play mp3 files sourced from url streams (internet radio).  During database creation, any 
+    file in the MusicPath (or sub-directories) with .pls or .m3u extensions will be added to the database. 
+    For .m3u files, fruitbox will first extract the Artist and Title names from the #EXTINF entries (if in 
+    the format "Artist - Title").  For .pls files, for each File* entry, fruitbox will first extract the 
+    Title from it's corresponding Title* entry.
+    
+    For both .m3u and .pls files, fruitbox will request the ICY Header from the stream server (during database 
+    creation) and, if available, assign the icy-name to the Title name, and the icy-description to the Artist 
+    name. During playback of mp3 streams, fruitbox will extract ICY (SHOUTcast) metadata to display real-time 
+    StreamTitle information (ie. currently playing song).
+    
+    Note: .pls and .m3u files for internet radio stations can be found on the internet.  A good source is 
+    https://www.internet-radio.com/
+
+
+  8: Input Control Buttons
+
+  The fruitbox input controls can be modified via the Controls menu.  By default, the buttons are mapped 
+  to keyboard keys (see section 'Default Buttons'), but each key can be re-mapped to any of the following...
+  
+  1. Keyboard key
+  2. GPIO input pin
+  3. USB game controllers (joystick stick / button)
+  4. Region on touch screen
+  
+  For touch screen buttons, the touch areas are defined in the skin file itself, using the [touch areas] 
+  section, because these are skin-related.  If any buttons are defined in the skins' [touch areas] section 
+  and a touch screen is detected, the user-defined mapping for that button is ignored and set to touch 
+  input.
+
+
+  8.1: Default Buttons
+
+    The button controls are mapped to the following keyboard keys by default, but can be re-mapped to other 
+    keyboard keys, GPIO inputs, USB game controllers or touch screen inputs defined in the fruitbox ini file.
+    
+       Keyboard Key   fruitbox button     Description
+    ---------------   ------------------- --------------------------
+               LEFT : Left .............. Move title strips left
+              RIGHT : Right ............. Move title strips right
+                  [ : LeftScreen ........ Move to previous screen
+                  ] : RightScreen ....... Move to next screen
+                  , : LeftSort .......... Move to prev sort section*
+                  . : RightSort ......... Move to next sort section*
+                 UP : Up ................ Move song selection up
+                                          (joystick mode only)
+               DOWN : Down .............. Move song selection down
+                                          (joystick mode only)
+    0 to 9 / A to Z : Select0..SelectZ .. Song selection
+              ENTER : Select ............ Select song
+                 F1 : Coin1 ............. Insert coin
+                 F2 : Coin2 ............. Insert coin
+                 F3 : Coin3 ............. Insert coin
+                 F4 : Coin4 ............. Insert coin
+                 F5 : Coin5 ............. Insert coin
+                 F6 : Coin6 ............. Insert coin
+                 F7 : Flag1 ............. Toggle status flag 1
+                 F8 : Flag2 ............. Toggle status flag 2
+                 F9 : Flag3 ............. Toggle status flag 3
+                F10 : Flag4 ............. Toggle status flag 4
+              SPACE : Random ............ Select random song
+          BACKSPACE : Skip .............. Skip (stops currently
+                  ; : Pause ............. pause (pauses/unpauses
+                                          currently playing song)
+                  ' : AttractMode ....... Toggle Attract Mode
+                F11 : LoopQueue ......... Toggle Loop mode
+                F12 : FreePlay .......... Toggle Free Play mode
+             DELETE : ClearQueue ........ Clear all songs in
+                                          play queue
+                  = : VolUp ............. Song volume up
+                  - : VolDown ........... Song volume down
+          LEFT CTRL : Mute .............. Mute / Unmute song and
+                                   ...... sound effects volume
+         RIGHT CTRL : Screenshot ........ Take Screenshot
+      FORWARD SLASH : Search ............ Search Filter Menu
+                TAB : Menu .............. Main Menu
+                ESC : Quit .............. Quit fruitbox
+              SYSRQ : PowerOff .......... Power off Raspberry Pi
+    
+    * The sort sections start with a new letter of the alphabet corresponding to the last SortSongsBy value. 
+    For example, if the last SortSongsBy = Artist, and the currently displayed artists begin with 'B', then 
+    pressing 'LeftSort' will move to the screen which contains the first title strip which contains the first 
+    Artist beginning with the letter 'A'.
+    
+    The 'Screenshot' button is used to capture the screen, and write the image to 'screenshot.jpg' in the 
+    skin directory by default or the value of the 'Screenshot' parameter in the skin configuration file.
+
+
+  8.2: Touch Screen and Mouse Support
+
+    If a touch screen is detected and the skin is designed to support touch input, then fruitbox can use 
+    the touch screen to accept button presses.  Song selection by pressing the song title within the title 
+    strips themselves can also be supported.  The [touch screen] section in the fruitbox ini file defines 
+    the calibrated touch co-ordinates for the detected touch screen.  If no calibration values are present 
+    in the ini file, fruitbox will automatically run the touch screen calibration on start-up.  To run touch 
+    screen calibration again, simply delete the [touch screen] section in the fruitbox ini file, or select 
+    'Calibrate Touchscreen' through the Main menu 'Controls' option.
+    
+    If no touch screen is detected but a [mouse] is defined in the fruitbox ini file, then if a mouse is 
+    connected it can be used instead of a touch screen, using the touch defined areas in the skin file.  
+    Parameters in the [mouse] section of the ini file can be used to modify the look and behaviour of the 
+    visible mouse pointer.
+
+
+  9: On-screen Menus
+
+  Buttons 'Menu' and 'Search' provide access to on-screen menus. Each menu can be controlled directly by 
+  touch if a touchscreen is installed, or via the buttons or mouse if not.  For mouse or touch operation, 
+  an on-screen keyboard is displayed, otherwise the mapped fruitbox buttons are used.  In the latter case, 
+  the Left and Right keys are used to choose the menu option(s), any other button will select it. After 
+  selection, the value can be changed by using left/right (boolean or numeric values), or buttons '0' to 
+  '9' and 'A' to 'Z' for strings. For string entry, 'Left' is used to delete the last character and 'Right' 
+  is used to insert a space.  Any other button will exit the editing mode.
+
+
+  9.1: Main Menu
+
+    The main menu gives access to Global Settings, Button Configuration, Software Update, About information, 
+    and Power Off.
+
+
+  9.2: Search Menu
+
+    The search menu allows the user to filter out songs in the database, in order to find specific songs. 
+    Several filter fields are provided, and entering text into a field causes fruitbox to search for songs 
+    containing text within that criteria.  For example...
+    
+    If the text 'Bea' is entered into the Artist field, then fruitbox will only display Artists whose name 
+    contains 'Bea' (so for example, 'The Beatles', 'The Beach Boys', 'Bronski Beat', etc.).  If more than 
+    one field contains text, then all non-empty fields must be satisfied for the song to be displayed (i.e. 
+    Artist : Bea and Year : 1965, will only display songs if the Artist name contains 'Bea', and they are 
+    from 1965).  Hint: entering for example '198' into the Year field will display all songs from the 1980s.
+
+
+  10: Troubleshooting
+
+  Poor graphics performance is usually caused by not allocating enough memory to the GPU.  If the display 
+  is very sluggish, or is corrupted / flashing white, quit fruitbox and check for any 'GetError_0x505' 
+  messages.  These messages mean the GPU hasn't got enough memory to create the graphics in video memory, 
+  so has to use (slower) CPU memory instead.  To fix this, change the Raspberry Pi memory split using the 
+  Advanced Options in the raspi-config (type 'sudo raspi-config' from the command line).  256M is recommended 
+  for the GPU, but more may be needed if the skin contains lots of large graphics objects.
+
+
+  11: Hints and Tips
+
+  Automatically run fruitbox on power up
+  --------------------------------------
+  
+  To run fruitbox automatically on power up, add the following lines to /etc/rc.local :
+  
+   cd <directory where fruitbox is installed>
+   ./fruitbox --skin <your cfg file>
+  
+  
+  Automatically mount USB memory stick on power up
+  ------------------------------------------------
+  
+  If your music is stored on a USB memory stick, you can automatically mount the USB memory stick at boot 
+  time by typing the following commands:
+  
+   sudo mkdir -p /mnt/usb
+   sudo nano /etc/fstab
+  
+  When inside the nano editor, add the following line at the end of the table...
+  
+  /dev/sda1     /mnt/usb       vfat    defaults,nofail    0       0
+  
+  Save (Ctrl-O), then Quit nano (Ctrl-X).  Then in your fruitbox ini file, set the 'MusicPath' parameter 
+  to '/mnt/usb/'
+  
+  
+  Quick fruitbox style change using USB memory sticks
+  ---------------------------------------------------
+  
+  As a general tip, you can store the configuration file on a USB memory stick along with the music, and 
+  run fruitbox using the command './fruitbox --skin /mnt/usb/fruitbox.cfg'.  That way, you could have a 
+  complete jukebox look and feel with specific music all self-contained on the USB stick, so then all you 
+  need to do to change jukebox styles and music collections is to swap USB sticks...
+  
+  Let's Rock!
+
+
+
+  If you wish to design your own skins, please read on...
+
+
+  12: Configuration (Skin) Files
+
+  Configuration files (skins) define the look and feel of fruitbox.  A configuration file is a human-readable 
+  text file containing a list of parameters and their values.  Parameters are grouped into sections, where 
+  each section is defined by its name enclosed in square brackets, followed by the parameter list for that 
+  section.  The order of sections is not important except when the section refers to a display object, 
+  in which case the order of the sections determines the render order on the display.
+  
+  A parameter is defined by specifying its name, followed by its parameter value(s).  The parameter name 
+  and values can be separated by whitespace, = or :.  Parameter values can be strings, numeric decimal 
+  values, or boolean values (true, false, enable, disable, on, off, yes, no, 0, 1).
+  
+  Parameter values in <> brackets are compulsory, and those in [] are optional.
+  
+  Comments can be included in the configuration file by prefixing any comment text with the '#' character.
+  
+  The following list shows all the possible parameters for each section.  If a parameter is not specified 
+  in the configuration file, fruitbox will use a default value.
+  
+  Note that entries marked with a '*' means that these groups / parameters can be defined multiple times.
+  Note: filenames for 'MusicPath' parameters have file paths relative to the directory fruitbox was run 
+  from, whereas filenames for all other parameters (sound files, bitmap files, status text files, font 
+  files) have paths which are relative to the directory the configuration file itself is in.  This allows 
+  configuration files and their associated content files to be kept together, but easily share common MusicPath(s) 
+  with other skins.
+
+      [general]
+      SkinSize                      <width> <height> Size of the skin (in pixels).
+                                    The skin is scaled to match the full screen size of the display
+      SkinName                      <name> of the skin
+      SkinVersion                   <version string> of the skin
+      SkinDescription *             <description> of the skin
+      Screenshot                    <filename> of screenshot capture
+      MusicPath *                   <filename> of path to music files (mp3, ogv, m3u, pls).  Can contain sub-directories.
+
+      SortSongsBy *                 <title|artist|album|albumArtist|year|genre|trackNumber|publisher|ISRC|custom|random|unsorted> [Descend|Ascend]
+                                    optional [Descend|Ascend] is sort direction (Ascend if not specified)
+      NoDuplicates                  <yes|no> Prevent songs being added to the playqueue if they are already in the playqueue
+      DuplicatesUseCredits          <yes|no> Determines if a selected song which is already playing or in the queue (duplicate song)
+                                    uses up a credit
+      SelectButtons *               List of characters for the select code for the button presses
+      SelectButtonsSequence         <rowcol|colrow>
+                                    Specifies if the first select buttons are cycled before the second
+                                    select code buttons (colrow) or the after the second buttons (rowcol)
+      AutoSelect                    <yes|no>
+                                    No : Select button needs to be pressed to select song (after the select code is entered)
+                                    Yes : song selected immediately select code is entered
+      InstantPlay                   <yes|no>
+                                    No : selected song is queued in the coming up list
+                                    Yes : selected is immediately played (and any currently playing song is stopped)
+      ScreenJump                    <number> of screens of title strips moved in one go when 'LeftScreen' or 'RightScreen' button is pressed
+      SelectTimeout                 <time> [ticks|seconds|minutes|hours] Timeout for select code to return to '--' after not detecting all the selection digits
+      SelectHoldTimeout             <time> [ticks|seconds|minutes|hours] Timeout for select code to return to '--' after song selected
+      TitleStripAutoTurnTime        <time> [ticks|seconds|minutes|hours] Time between title_strips automatically turning (0 = no automatic title strip turn)
+      AutoGenre *                   <name> of Genre.  Pressing Auto button will cycle through all AutoGenre definitions (and 'Off'
+                                    and 'Any') and only select a random song from that Genre **
+      SongsPerTitleStrip            <number> of song entries on each song title strip
+      AlbumMode                     <yes|no>
+      TitleStripSize                <width> <height> (in pixels) of each song title strip
+      TitleStripBackground          <filename> [genre]
+                                    Filename of graphic image (bmp, png, tga, jpg, pcx) to be used as the title strip background
+                                    Optional Genre string is name of genre specific title strip background
+      PairSongs                     <yes|no|dual>
+                                    No : each song in a title strip is listed with its artist line
+                                    Yes : two songs are displayed (above and below) the artist line only if they are by the same artist
+                                    Dual : two songs are displayed (above and below) the artist line regardless of artist
+      TitleStripMoveStyle           <effect> <speed> <fading>.  See section 'TitleStrips'
+      SongDescription               <string> defining the song description for the song entry (first in a pair) in the title_strips.
+                                    Can contain a mixture of fixed text and reserved keywords
+                                    See 'TitleStrips section' for details.
+
+      PairedSongDescription         <string> defining (part of) the song description for the second song in a pair
+                                    NOTE: In Albums mode (AlbumMode = Albums) this determines the Album Title line
+      ArtistDescription             <string> defining (part of) the artist description in the title_strips (same values as 'SongDescription')
+      MatchedArtistDescription      <string> used instead of 'ArtistDescription' if the artists of the songs in a pair are the same
+                                    (or the second song in a pair is absent)
+      ExtraDescription *            <string> defining (part of) the extra description in the title_strips (same values as 'SongDescription')
+                                     Note that each entry must have a corresponding "ExtraText" entry
+      SongLoadTime                  <time> [ticks|seconds|minutes|hours] the time the song takes to load (from removing from the coming up queue to starting to play)
+      SongUnloadTime                <time> [ticks|seconds|minutes|hours] the time the song takes to unload (from finishing playing to the next song in the queue loading)
+      SongText                      <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
+                                    Text style for Song title in song title strip. See section 'Fonts and Text'
+      PairedSongText                <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
+                                    Text style for the paired Song title in song title strip. See section 'Fonts and Text'
+      ArtistText                    <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
+                                    Text style for Artist name in song title strip. See section 'Fonts and Text'
+      AlbumText                     <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
+                                    Text style for Album name in song title strip. See section 'Fonts and Text'
+      ExtraText *                   <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
+                                    Text style for the extra text field(s) in song title strip. See section 'Fonts and Text'
+                                    Note that this must be defined for each definition of "ExtraDescription"
+      AlbumArtSize                  <width> <height> (in pixels)
+      AlbumArtOffset                <x> <y> Offset from top left hand corner of songs title strip (in pixels)
+      AlbumArtAngle                 <angle> of Album artwork in degrees (0..359)
+      AlbumModeLineSpacing          <gap> (in pixels) between song titles in the albums song title_strips
+      NowPlayingMissingArtwork      <filename> of graphic image (bmp, png, tga, jpg, pcx) to be used if NowPlayingArtworkMode = 'Specified',
+                                    or no song artwork is found and NowPlayingArtworkMode = 'Auto'
+      AlbumModeMissingArtwork       <filename> of graphic image (bmp, png, tga, jpg, pcx) to be used if AlbumModeArtworkMode = 'Specified',
+                                    or no song artwork is found and AlbumModeArtworkMode = 'Auto'
+      NowPlayingArtworkMode         <none|embedded|folder|specified|logo|a>
+                                    none : don't show artwork,
+                                    embedded : use image in MP3 file,
+                                    folder : use 'folder.jpg' in song directory,
+                                    specified : use MissingArtwork image,
+                                    logo : use fruitbox logo,
+                                    auto : use embedded/folder/missing/logo if available
+      AlbumModeArtworkMode          <none|folder|specified|logo|auto>
+                                    none : don't show artwork,
+                                    folder : use 'folder.jpg' in song directory,
+                                    specified : use MissingArtwork image,
+                                    logo : use fruitbox logo,
+                                    auto : use folder/missing/logo if available
+
+      [fonts]
+      File *                        <filename> <height> font to add to the font pool (ttf, opentype, type1, CID, CFF, fon, fnt, x11, pcf)
+
+      [title strip] * 
+      Visible                       <yes|no> (makes the object visible or invisible)
+      Position                      <x> <y> (in pixels)
+      Clip                          <x> <y> <width> <height> (in pixels)
+      Angle                         <angle> of object in degrees (0..359)
+      MoveDelay                     <delay> (in video frame ticks) between left/right button press and title strip moving
+      MoveReverse                   <yes|no> reverse the direction of the title strip movement
+      HorizontalFlip                <yes|no> flip object horizontally
+      VerticalFlip                  <yes|no> flip object vertically
+      Tint                          <r> <g> <b> <a> (modify the objects colour)
+
+      [status] * 
+      Visible                       <yes|no> (makes the object visible or invisible)
+      Size                          <width> [dynamic] <height> [dynamic] (in pixels)
+      Position                      <x> [dynamic] <y> [dynamic] (in pixels)
+      Clip                          <x> [dynamic] <y> [dynamic] <width> [dynamic] <height> [dynamic] (in pixels)
+      Angle                         <angle> [dynamic] of object in degrees (0..359)
+      Tint                          <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
+      DynamicEnableFlag             <1..4> enable dynamic parameters using status flag 1..4
+      HorizontalFlip                <yes|no> flip object horizontally
+      VerticalFlip                  <yes|no> flip object vertically
+      Contents                      <filename> of text file describing status box contents
+      Output                        <filename> of output text file containing status
+      Text                          <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
+      LineSpacing                   <gap> (in pixels) between text lines in the status box
+      LoopVideo                     <yes|no> start video from beginning after it finishes
+      TimerTickPeriod               <time> (in video frame ticks) of status box timer period
+      TimerOneShot                  <yes|no>
+                                    Yes : timer stops after one tick
+                                    No : timer runs indefinitely (default)
+      TimerEnable                   <yes|no>
+                                    Yes : timer initially enabled (default)
+                                    No : timer initially disabled)
+      BitmapDirectory               <location> of image files (bmp, jpg, png)
+      Bitmap *                      <filename> of graphic image (bmp, png, tga, jpg, pcx)
+      Video                         <filename> of video clip (ogv)
+      Sound                         <filename> of sound effect (wav, flac, ogg) <volume (0..100)> [loop (Yes|No)]
+
+      [bitmap] * 
+      Visible                       <yes|no> (makes the object visible or invisible)
+      Size                          <width> [dynamic] <height> [dynamic] (in pixels)
+      Position                      <x> [dynamic] <y> [dynamic] (in pixels)
+      Clip                          <x> [dynamic] <y> [dynamic] <width> [dynamic] <height> [dynamic] (in pixels)
+      Angle                         <angle> [dynamic] of object in degrees (0..359)
+      Tint                          <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
+      DynamicEnableFlag             <1..4> enable dynamic parameters using status flag 1..4
+      HorizontalFlip                <yes|no> flip object horizontally
+      VerticalFlip                  <yes|no> flip object vertically
+      File                          <filename> of graphic image (bmp, png, tga, jpg, pcx)
+
+      [spectrum] * 
+      Visible                       <yes|no> (makes the object visible or invisible)
+      Size                          <width> [dynamic] <height> [dynamic] (in pixels)
+      Position                      <x> [dynamic] <y> [dynamic] (in pixels)
+      Clip                          <x> [dynamic] <y> [dynamic] <width> [dynamic] <height> [dynamic] (in pixels)
+      Angle                         <angle> [dynamic] of object in degrees (0..359)
+      Tint                          <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
+      DynamicEnableFlag             <1..4> enable dynamic parameters using status flag 1..4
+      HorizontalFlip                <yes|no> flip object horizontally
+      VerticalFlip                  <yes|no> flip object vertically
+      Bitmap                        <filename> of band(s) graphic image (bmp, png, tga, jpg, pcx)
+      Band *                        <number (0..31)> [gain (1.0 nominal)] [offset (x y)] of visible frequency band
+      Mode                          <scaled|clipped|position> bitmap draw mode
+      Channel                       <left|right|both>
+      Decay                         <value> speed of peak decay (0=instant)
+
+      [touch areas]
+      TitleStrips                   <filename> of graphic image (bmp, png, tga, jpg, pcx).
+                                    Specifying this enables song selection by touching song name
+      Offset                        <x> <y> (offset in pixels from top left corner of song touch highlight in song title region)
+      Size                          <width> <height> (in pixels).  If not specified the size will be set to cover the song title exactly
+      Angle                         <angle> [dynamic] of object in degrees (0..359)
+      HorizontalFlip                <yes|no> flip object horizontally
+      VerticalFlip                  <yes|no> flip object vertically
+      Tint                          <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
+      Quit                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Coin1                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Coin2                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Coin3                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Coin4                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Coin5                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Coin6                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      VolUp                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      VolDown                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Random                        <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select                        <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Skip                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Pause                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Up                            <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Down                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Left                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Right                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      LeftScreen                    <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      RightScreen                   <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      LeftSort                      <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      RightSort                     <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      AttractMode                   <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      LoopQueue                     <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      FreePlay                      <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      ClearQueue                    <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Mute                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      PowerOff                      <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select0                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select1                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select2                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select3                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select4                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select5                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select6                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select7                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select8                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select9                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectA                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectB                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectC                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectD                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectE                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectF                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectG                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectH                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectI                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectJ                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectK                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectL                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectM                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectN                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectO                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectP                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectQ                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectR                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectS                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectT                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectU                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectV                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectW                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectX                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectY                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectZ                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Flag1                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Flag2                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Flag3                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Flag4                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Menu                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Search                        <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Mouse                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Screenshot                    <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+
+
+  ** Recognised AutoGenre values are...
+
+  Blues                         Classic Rock                  Country                       Dance                         
+  Disco                         Funk                          Grunge                        Hip-Hop                       
+  Jazz                          Metal                         New Age                       Oldies                        
+  Other                         Pop                           R&B                           Rap                           
+  Reggae                        Rock                          Techno                        Industrial                    
+  Alternative                   Ska                           Death Metal                   Pranks                        
+  Soundtrack                    Euro-Techno                   Ambient                       Trip-Hop                      
+  Vocal                         Jazz+Funk                     Fusion                        Trance                        
+  Classical                     Instrumental                  Acid                          House                         
+  Game                          Sound Clip                    Gospel                        Noise                         
+  AlternRock                    Bass                          Soul                          Punk                          
+  Space                         Meditative                    Instrumental Pop              Instrumental Rock             
+  Ethnic                        Gothic                        Darkwave                      Techno-Industrial             
+  Electronic                    Pop-Folk                      Eurodance                     Dream                         
+  Southern Rock                 Comedy                        Cult                          Gangsta Rap                   
+  Top 40                        Christian Rap                 Pop / Funk                    Jungle                        
+  Native American               Cabaret                       New Wave                      Psychedelic                   
+  Rave                          Showtunes                     Trailer                       Lo-Fi                         
+  Tribal                        Acid Punk                     Acid Jazz                     Polka                         
+  Retro                         Musical                       Rock & Roll                   Hard Rock                     
+  Folk                          Folk-Rock                     National Folk                 Swing                         
+  Fast Fusion                   Bebob                         Latin                         Revival                       
+  Celtic                        Bluegrass                     Avantgarde                    Gothic Rock                   
+  Progressive Rock              Psychedelic Rock              Symphonic Rock                Slow Rock                     
+  Big Band                      Chorus                        Easy Listening                Acoustic                      
+  Humour                        Speech                        Chanson                       Opera                         
+  Chamber Music                 Sonata                        Symphony                      Booty Bass                    
+  Primus                        Porn Groove                   Satire                        Slow Jam                      
+  Club                          Tango                         Samba                         Folklore                      
+  Ballad                        Power Ballad                  Rhythmic Soul                 Freestyle                     
+  Duet                          Punk Rock                     Drum Solo                     A Cappella                    
+  Euro-House                    Dance Hall                    Goa                           Drum & Bass                   
+  Club-House                    Hardcore                      Terror                        Indie                         
+  BritPop                       Negerpunk                     Polsk Punk                    Beat                          
+  Christian Gangsta Rap         Heavy Metal                   Black Metal                   Crossover                     
+  Contemporary Christian        Christian Rock                Merengue                      Salsa                         
+  Thrash Metal                  Anime                         JPop                          Synthpop                      
+  Abstract                      Art Rock                      Baroque                       Bhangra                       
+  Big Beat                      Breakbeat                     Chillout                      Downtempo                     
+  Dub                           EBM                           Eclectic                      Electro                       
+  Electroclash                  Emo                           Experimental                  Garage                        
+  Global                        IDM                           Illbient                      Industro-Goth                 
+  Jam Band                      Krautrock                     Leftfield                     Lounge                        
+  Math Rock                     New Romantic                  Nu-Breakz                     Post-Punk                     
+  Post-Rock                     Psytrance                     Shoegaze                      Space Rock                    
+  Trop Rock                     World Music                   Neoclassical                  Audiobook                     
+  Audio Theatre                 Neue Deutsche Welle           Podcast                       Indie Rock                    
+  G-Funk                        Dubstep                       Garage Rock                   Psybient                      
+  Off                           Any                           Unknown                       
+
+  Note that you can also define your own Genres and fruitbox will recognise these if the 'AutoGenre' 
+  field matches the name in the MP3 (ID3v2) genre tag.
+
+  fruitbox will make every effort to choose a song from the specified AutoGenre, but is constrained
+  by the song history and number of songs available to choose from.  If it cannot choose a song
+  in a reasonable time, it will play any song.
+
+
+  12.1: Dynamic Parameter values
+
+    Dynamic parameter values (specified as [dynamic] in the above parameter descriptions), are optional values 
+    which extend the usefulness of the parameter.  They can be applied to the Position, Size, Clip, Angle 
+    and/or Tint of displayable objects, and are used to modify the parameter value in real-time.  The format 
+    of the dynamic value field is "[max_value mode <param>]".  Note the square brackets must be specified 
+    in order for the dynamic values to be recognised.  The parameter value will change between the initial 
+    value and the 'max_value'.  How the value changes is given by the 'mode', which can be one of the following 
+    strings :
+
+      ${RANDOM}
+      ${TIMER_TICK}
+      ${VOLUME}
+      ${FIRST_VISIBLE_TITLE_STRIP}
+      ${LAST_VISIBLE_TITLE_STRIP}
+      ${NOW_PLAYING_ELAPSED_TIME}
+      ${SONG_LOAD_POSITION}
+      ${SPECTRUM_BAND}
+      ${LEFT_SPECTRUM_BAND}
+      ${RIGHT_SPECTRUM_BAND}
+
+    Examples...
+    
+    Size = 100 [200 ${VOLUME}] 150
+    
+    ...will create an object whose horizontal size ranges from 100 to 200 depending upon the volume, and 
+    whose vertical size is fixed at 150.
+    
+    Position = 100 150 [250 ${SPECTRUM_BAND} 2] 
+    
+    ...will create an object whose horizontal position is fixed at 100, and whose vertical position ranges 
+    from 150 to 250 depending upon the value of the audio spectrum frequency band number 2
+    
+    Tint = 100 150 75 [255 ${RANDOM}] 200
+    
+    ...will create an object whose tint values red, green and alpha elements are fixed at 100, 150 and 200 
+    respectively, but whose blue element randomly changes between 75 and 255 in real time.
+
+
+  12.2: Time Values
+
+    Several skin parameters are specified in terms of time.  The (integer and fractional) time value can 
+    be appended with "ticks", "seconds", "minutes" or "hours" (defaults to ticks if no units are specified). 
+    "ticks" refers to the number of video frame ticks.  So for example at 60Hz, a time value of 120 equals 
+    2 seconds.  When starting up, fruitbox will detect the video display and print out the frame rate (along 
+    with the resolution).  Specifying the time in ticks is useful for animation, which is synced to the video 
+    display, but otherwise it is recommended to use conventional time units for non display parameters (for 
+    example SongLoadTime) which means the time is not dependant upon the video frame rate, which can vary 
+    depending on which display device is connected and how it's configured.
+
+
+  12.3: Status Bitmaps
+
+    There are two ways of specifying bitmaps in status objects...
+    
+    Using one or more 'Bitmap' parameters.  This preloads the bitmaps on startup, so the number is limited 
+    by the GPU memory, but allows for fast switching for full-frame rate animation.
+    
+    Alternatively, the 'BitmapDirectory' can be used.  This specifies a location on the file system in which 
+    image files are stored (.bmp, .jpg, .png).  fruitbox only loads these into GPU memory when needed, so 
+    is slower, but there is no limit on the number of image files.  This is more suitable for use in slide-show 
+    displays for example.
+    
+    Animated GIF files can be supported by splitting the GIF file into individual files (by using 'ffmpeg 
+    -i file.gif file%02d.jpg' for example), including them in a [status] section with multiple 'Bitmap' entries, 
+    and specifying the animation speed with 'TimerTickPeriod'.  Then in your status Contents text file include 
+    the text
+    '${IF_TIMER_TICK}${DRAW_BITMAP}'.
+
+
+  12.4: Status Videos
+
+    Status boxes can be used to display either video clips or music videos.  If the Video parameter is specified 
+    in the [status] object, any reference to VIDEO in the status Contents file variables, i.e. ${DRAW_VIDEO} 
+    will refer to the video clip specified by the Video parameter.  If the Video parameter is not specified, 
+    any VIDEO $variables will refer to the currently playing song (if it's a video file).
+
+
+  12.5: Spectrum Analyser
+
+    A [spectrum] object allows an audio frequency spectrum to be displayed for the mp3 songs (not ogv videos). 
+    Multiple [spectrum] objects can be defined.  Various options allow great flexibility in the visual appearance. 
+    For example, the user has control over the look of each of the 32 possible frquency bands, and which 
+    are visible.
+
+
+  12.6: Fonts and Text
+
+    The configuration file [fonts] section allows multiple fonts of different sizes to be loaded and used 
+    by different display elements.  This removes the need for each text definition to load it's own font, 
+    instead referencing a specific font type and size from the 'font pool'.  Note that the order in which 
+    the fonts are define in the [fonts] section determines their font number, starting at 1.  Font number 
+    0 is the internal fruitbox font used for the on-screen menus etc.
+    
+    Text definitions ([general] ArtistText, [general] SongText, [general] PairedSongText, [general] ExtraText 
+    and [status] Text) parameters have the following arguments...
+    
+    <font> <colour> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
+    
+          font : number of font from 'font pool' (0..)
+                 note that the fonts in the pool are numbered in
+                 the order in which they are defined in the
+                 [fonts] section of the skin configuration file
+        colour : red green blue alpha (0..255)
+                 (alpha : 0 completely transparent
+                 through to 255 completely opaque)
+     alignment : 'Left', 'Centre' or 'Right'
+    capitalise : 'Yes' or 'No'
+          mode : 0 : text is displayed normally
+                -1 : Condense ... wide text is horizontally squashed
+                     to fit within max_width
+                 1..n : Scroll ... text is scrolled at the specified
+                    speed (1 = slowest) if it doesn't fit into
+                    max_width
+        quoted : 'Yes' (text is wrapped within double-quotes),
+                 'No' text is unmodified
+        offset : x y (text position is shifted by these amounts
+                 in pixels)
+     max_width : The maximum width of the text.  If the text is
+                 wider than this, then it will be shrunk to the
+                 maximum width (if the 'mode' option is -1), or
+                 scrolled within this width (if mode > 0)
+    
+
+
+  12.7: FreePlay / Coin Mode
+
+    fruitbox can operate in free play or coin mode.  In freeplay mode, no coins (or credits) need to be inserted 
+    to add a song to the play queue.  In coin mode, fruitbox can support up to six coin buttons.  Each coin 
+    button has its own 'CreditsPerCoin' value, so that fruitbox can mimic jukeboxes which have multiple coin 
+    slots, for different coin denominations.  The 'CreditsPerCoin' value determines how many credits are 
+    added when the coin is inserted.
+    
+    The 'CreditsPerSong' parameter determines how many credits are used when a song is selected.  All six 
+    'CreditsPerCoin' parameters are ignored if fruitbox is in free play mode.
+
+
+  12.8: Touch Song Mode / Button Touch Areas
+
+    If a [touch areas] "TitleStrips = <image file>" object parameter is specified in the skin file, then 
+    touch song mode is activated (only if a touch screen has been detected).  This option over-rides joystick 
+    mode if that has also been defined (using the [joystick] object).
+    
+    In touch song mode, the user can touch the song title areas themselves to select a song, rather than 
+    using select buttons.  Note that the song touch areas default to the title strip area holding the song 
+    name, but their size and position can be adjusted by using the 'Size' and 'Offset' [touch song] parameters. 
+    The <image file> defines an image file which is displayed over the song area when being touched.
+    
+    If any button assignments are specified in the [touch areas] section, then (and a touchscreen has been 
+    detected) that area will trigger the corresponding button press event if touched.  Furthermore, if the 
+    optional image file parameter is specified, then that image will be drawn whilst that area of the display 
+    is touched, allowing simple button press animation effects.
+    
+    Note : if a button area has been defined in the [touch areas] section, and a touch screen has been detected, 
+    then that button will be automatically configured as a touch input, over-riding any mapping in the fruitbox 
+    ini file.
+
+
+  12.9: Mouse Mode
+
+    If the mouse is defined and enabled in the [mouse] section of the ini file, then mouse mode is activated. 
+    This mode allows a mouse to be used to select songs in a similar way to touch mode, in that touch areas 
+    and touch song operation is activated, but responsive to the mouse pointer and left mouse button in addition 
+    to touch input.  This allows all skins designed for touch to be used without touch devices.
+
+
+  12.10: Joystick Mode
+
+    If a [joystick] object is specified in the ini file, then joystick mode is activated.  This allows a 
+    song to be chosen using the 'Up', 'Down', 'Left' and 'Right' buttons instead of entering the select code, 
+    and is useful for running fruitbox in arcade cabinets for example, where buttons are limited.  Pressing 
+    the 'Select' button will then add that song to the play queue (AutoSelect mode is disabled when joystick 
+    mode is active).
+    
+    The joystick image specified is positioned in the same place as the song title being selected, and its 
+    size is calculated to fit exactly into the region containing the song title.  Specifying the 'Size' parameter 
+    in the configuration file allows the size to be set manually, for example if the highlighted bitmap needs 
+    to overlap the song title region.  The 'Offset' parameter can then be used to adjust the position of 
+    the highlighter precisely around the song title region.
+
+
+  12.11: Instant Play
+
+    If the InstantPlay parameter is enabled in the skin configuration file, then the playqueue is bypassed. 
+    When a song is selected, any currently playing song is immediately stopped, and the selected song started. 
+    This can be useful when streaming mp3s from url sources (internet radio), which effectively have an 
+    infinite duration and hence don't naturally stop.
+
+
+  12.12: Random Songs
+
+    fruitbox can play random songs in one of two ways...
+     1. The user pressing the 'Random' button
+     2. fruitbox selecting a random song in attract mode
+    
+    In either case, fruitbox will attempt to prevent songs being repeatedly played by only picking a song 
+    if it doesn't appear in it's song play history and current playqueue. The size of the history list can 
+    be changed with the 'SongHistoryDepth' configuration parameter.  If this is large and the number of songs 
+    in the database is relatively small, then fruitbox may not be able to quickly choose a random song which 
+    has not previously been played within the history and current play queue, so will just play a random 
+    song anyway even if it already been played recently.
+
+
+  12.13: Albums / Singles Mode
+
+    Fruitbox has two distinct modes - Albums and Singles, specified by the 'AlbumMode' parameter.
+    
+    In Singles mode, each song is individually selectable, and each title strip displays a number of songs 
+    (or pairs of songs), each along with the artist name.  'ArtistText', 'SongText', 'PairedSongText', 'PairSongs' 
+    and 'SongsPerTitleStrip' configuration parameters can be used adjust the appearance of the song details 
+    on the title strips.
+    
+    In Albums mode, each title strip shows the album title, album artist, album cover art, and list of songs 
+    in the album (upto the SongsPerTitleStrip value).  One selection will add all the songs in the album 
+    to the play queue in one go (assuming, in non-freeplay mode, there are sufficient credits).  'AlbumText', 
+    'ArtistText', 'SongText', 'PairedSongText', 'AlbumArtSize', 'AlbumArtOffset' and 'SongsPerTitleStrip' 
+    configuration parameters can be used adjust the appearance of the album details on the title strips. 
+    Also note that 'PairedSongDescription' is used to define the contents of the line which is associated 
+    with the 'AlbumText' parameter, and all of the 'Paired*' Description values are ignored (as these are 
+    only relevant for singles mode song pairs).
+
+
+  13: Screen Layout
+
+  The display is built using a combination of the following objects, as defined in the skin file:
+  
+  1. [title strip] object : a region which contains songs.
+                           See title strips section for more details.
+  2.      [bitmap] object : a region which contains a static bitmap.
+                           This can be used for background and
+                           foregrounds for example.
+  3.      [status] object : a region containing status information.
+                           See status box section for more details.
+  4.    [spectrum] object : a region containing an audio spectrum analyser.
+                           See spectrum section for more details.
+  5.  [touch song] object : a region containing a bitmap highlighting
+                           a song name when touched.
+                           See touch song section for more details.
+  
+  Note that there is no limit on the number of objects which can be defined.  They are rendered to the 
+  display in the order that they are defined in the skin file.
+
+
+  13.1: TitleStrips
+
+    TitleStrips are the regions in the display which contain the songs.  In Singles mode, song titles** are 
+    listed vertically, and shown along with the artist name.  If 'PairSongs' is enabled, then the songs are 
+    arranged in pairs with the artist name*** shown in between them (i.e. side A/B).  In Albums mode, the 
+    title strip contains details about the album in addition to the song list (see section 'Albums / Singles 
+    Mode' for more details).
+    
+    Songs are sorted in the order according to the 'SortSongsBy' configuration parameter.  Songs in each 
+    title strip (in Singles mode), or title strips themselves (in Albums mode) are assigned their own unique 
+    select code.  The command line option '--debug-song-nums' can be used to make these codes visible; useful 
+    when developing skins.
+    
+    TitleStrips automatically move and update their contents when the 'Left' or 'Right' buttons are pressed. 
+    The look and movement of the title strips is determined by 'TitleStripMoveStyle' parameter in the skin 
+    file, as follows:
+    
+     TitleStripMoveStyle <speed> <effect> <fade>
+    
+          <speed>
+            1..x = higher number = faster title strip turn (0 = instant)
+          <effect> ...
+               0 = swipe horizontally
+               1 = swipe vertically
+               2 = reveal horizontally
+               3 = reveal vertically
+               4 = turn horizontally
+               5 = turn vertically
+               6 = dissolve
+           <fade>
+             no  = title strips don't fade
+             yes = title strips fade to black
+    
+    Notes:
+    
+    ** The 'SongDescription' and 'PairedSongDescription' configuration parameters can be used to modify 
+    the text displayed on the song lines of the title strip(s)  ('PairedSongDescription' is only used if 
+    'PairSongs' is not set to false)
+    *** The 'ArtistDescription' configuration parameter works in the same way as the 'SongDescription' parameter, 
+    but affects the artist name text in the title strip(s) rather than the song title text.
+    
+    Note that as well as fixed text, the *Description parameters can also contain one or more of the following 
+    reserved keywords which will be replaced by actual song details...
+
+      ${SONG_TITLE}
+      ${SONG_ARTIST}
+      ${ALBUM_TITLE}
+      ${ALBUM_ARTIST}
+      ${YEAR}
+      ${GENRE}
+      ${TRACK_NUMBER}
+      ${PUBLISHER}
+      ${ISRC}
+      ${CUSTOM_TAG}
+      ${LENGTH}
+      ${STRIP_CODE}
+      ${PAIRED_SONG_TITLE}
+      ${PAIRED_SONG_ARTIST}
+      ${PAIRED_ALBUM_TITLE}
+      ${PAIRED_ALBUM_ARTIST}
+      ${PAIRED_YEAR}
+      ${PAIRED_GENRE}
+      ${PAIRED_TRACK_NUMBER}
+      ${PAIRED_PUBLISHER}
+      ${PAIRED_ISRC}
+      ${PAIRED_CUSTOM_TAG}
+      ${PAIRED_LENGTH}
+      ${PAIRED_STRIP_CODE}
+
+  13.2: Status Boxes
+
+    Status Boxes provide a very flexible way of displaying real-time text-based information, fixed and animated 
+    bitmaps, video clips and sound effects.  Using the 'Output' parameter also allows the status information 
+    to be written to an external file to be parsed by external applications*.  Examples of status include 
+    'Now Playing' information, 'Coming Up' song list, Select Code, Credits, etc.  Each status box defined 
+    should have a 'Contents' file associated with it.  This is a file that contains human readable text which 
+    indicates what is drawn in the status box.
+    
+    As well as fixed text, the user can also specify the following predefined variables, which represent 
+    song details and jukebox status, and also enable text and bitmaps to be conditionally drawn under many 
+    different circumstances.  The GPIO related predefined variables allow GPIO pins to be driven with high 
+    or low values under different fruitbox conditions.
+    
+    * Note: outputting status to a text file can be done as well as displaying the status on the display, 
+    or instead of (to supress the status being rendered to the display, do not define the 'Size' parameter 
+    (or set width and/or height to zero).
+
+      ${NOW_PLAYING_TITLE}
+      The name of the song which is currently playing
+
+      ${NOW_PLAYING_STREAM_TITLE}
+      The StreamTitle of the currently playing radio program
+
+      ${NOW_PLAYING_STREAM_URL}
+      The StreamUrl of the currently playing radio program
+
+      ${NOW_PLAYING_ARTIST}
+      The name of the artist of the song which is currently playing
+
+      ${NOW_PLAYING_ALBUM}
+      The name of the album of the song which is currently playing
+
+      ${NOW_PLAYING_ALB_ARTIST}
+      The name of the album artist of the song which is currently playing
+
+      ${NOW_PLAYING_TRACK_NUMBER}
+      The track number of the song which is currently playing
+
+      ${NOW_PLAYING_YEAR}
+      The year of the song which is currently playing
+
+      ${NOW_PLAYING_GENRE}
+      The genre of the song which is currently playing
+
+      ${NOW_PLAYING_PUBLISHER}
+      The publisher of the song which is currently playing
+
+      ${NOW_PLAYING_ISRC}
+      The ISRC of the song which is currently playing
+
+      ${NOW_PLAYING_CUSTOM_TAG}
+      The custom MP3 tag of the song which is currently playing
+
+      ${NOW_PLAYING_LENGTH}
+      The length in mm:ss of the currently playing song
+
+      ${NOW_PLAYING_ELAPSED_TIME}
+      The elapsed time in mm:ss of the currently playing song
+
+      ${NOW_PLAYING_TIME_REMAINING}
+      The remaining time in mm:ss of the currently playing song
+
+      ${NOW_PLAYING_ARTWORK}
+      The cover artwork of the currently playing song.  The artwork will occupy the entire status box, and 
+      is drawn before any text.  The actual artwork displayed will depend upon the value of the [general] 'ArtworkMode' 
+      configuration setting.
+
+      ${COMING_UP_NUM_SONGS}
+      The number of songs coming up in the play queue
+
+      ${COMING_UP_TOTAL_TIME}
+      The total play time in hh:mm:ss of the songs in the play queue
+
+      ${COMING_UP_TITLE}
+      The title of a song in the play queue.  Each time this reserved word is used, it refers to the next song 
+      after the last one referenced
+
+      ${COMING_UP_ARTIST}
+      The artist name of a song in the play queue.  Each time this reserved word is used, it refers to the 
+      next song after the last one referenced
+
+      ${COMING_UP_ALBUM}
+      The album name of a song in the play queue.  Each time this reserved word is used, it refers to the next 
+      song after the last one referenced
+
+      ${COMING_UP_ALB_ARTIST}
+      The album artist name of a song in the play queue.  Each time this reserved word is used, it refers to 
+      the next song after the last one referenced
+
+      ${COMING_UP_TRACK_NUMBER}
+      The track number of a song in the play queue.  Each time this reserved word is used, it refers to the 
+      next song after the last one referenced
+
+      ${COMING_UP_YEAR}
+      The year of a song in the play queue.  Each time this reserved word is used, it refers to the next song 
+      after the last one referenced
+
+      ${COMING_UP_GENRE}
+      The genre of a song in the play queue.  Each time this reserved word is used, it refers to the next song 
+      after the last one referenced
+
+      ${COMING_UP_PUBLISHER}
+      The publisher of a song in the play queue.  Each time this reserved word is used, it refers to the next 
+      song after the last one referenced
+
+      ${COMING_UP_ISRC}
+      The ISRC of a song in the play queue.  Each time this reserved word is used, it refers to the next song 
+      after the last one referenced
+
+      ${COMING_UP_CUSTOM_TAG}
+      The custom MP3 tag of a song in the play queue.  Each time this reserved word is used, it refers to the 
+      next song after the last one referenced
+
+      ${COMING_UP_LENGTH}
+      The length in mm:ss of a song in the play queue.  Each time this reserved word is used, it refers to 
+      the next song after the last one referenced
+
+      ${LAST_PLAYED_TITLE}
+      The name of the song which was last played
+
+      ${LAST_PLAYED_ARTIST}
+      The name of the artist of the song which was last played
+
+      ${LAST_PLAYED_ALBUM}
+      The name of the album of the song which was last played
+
+      ${LAST_PLAYED_ALB_ARTIST}
+      The name of the album artist of the song which was last played
+
+      ${LAST_PLAYED_TRACK_NUMBER}
+      The track number of the song which was last played
+
+      ${LAST_PLAYED_YEAR}
+      The year of the song which was last played
+
+      ${LAST_PLAYED_GENRE}
+      The genre of the song which was last played
+
+      ${LAST_PLAYED_PUBLISHER}
+      The publisher of the song which was last played
+
+      ${LAST_PLAYED_ISRC}
+      The ISRC of the song which was last played
+
+      ${LAST_PLAYED_CUSTOM_TAG}
+      The custom MP3 tag of the song which was last played
+
+      ${LAST_PLAYED_LENGTH}
+      The length in mm:ss of the song which was last played
+
+      ${CREDITS}
+      The number of credits
+
+      ${AUTO_GENRE}
+      The name of the current AutoGenre that Attract mode will select a random song from
+
+      ${CREDITS_PER_COIN1}
+      The number of credits added when a coin is inserted
+
+      ${CREDITS_PER_COIN2}
+      The number of credits added when a coin is inserted
+
+      ${CREDITS_PER_COIN3}
+      The number of credits added when a coin is inserted
+
+      ${CREDITS_PER_COIN4}
+      The number of credits added when a coin is inserted
+
+      ${CREDITS_PER_COIN5}
+      The number of credits added when a coin is inserted
+
+      ${CREDITS_PER_COIN6}
+      The number of credits added when a coin is inserted
+
+      ${CREDITS_PER_SONG}
+      The number of credits used per song play
+
+      ${VOLUME}
+      The song volume
+
+      ${SELECT_CODE}
+      The select code
+
+      ${NUM_SONGS}
+      The total number of songs in the database
+
+      ${NUM_SEARCH_SONGS}
+      The number of songs from the search
+
+      ${PLAYQUEUE_SPACE}
+      The number of empty spaces in the playqueue
+
+      ${NUM_TITLE_STRIPS}
+      The total number of title_strips in the jukebox
+
+      ${FIRST_VISIBLE_TITLE_STRIP}
+      The number of the first title strip visible on the display
+
+      ${LAST_VISIBLE_TITLE_STRIP}
+      The number of the last title strip visible on the display
+
+      ${TOTAL_PLAYED_SONGS}
+      The number of songs played
+
+      ${TOTAL_PLAYED_TIME}
+      The total time in hh:mm:ss for the number of songs played
+
+      ${SET_GPIO_00_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_00_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_01_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_01_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_02_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_02_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_03_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_03_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_04_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_04_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_05_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_05_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_06_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_06_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_07_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_07_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_08_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_08_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_09_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_09_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_10_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_10_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_11_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_11_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_12_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_12_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_13_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_13_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_14_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_14_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_15_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_15_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_16_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_16_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_17_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_17_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_18_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_18_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_19_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_19_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_20_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_20_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_21_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_21_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_22_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_22_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_23_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_23_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_24_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_24_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_25_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_25_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_26_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_26_LO}
+      Sets the specified GPIO output low
+
+      ${SET_GPIO_27_HI}
+      Sets the specified GPIO output high
+
+      ${SET_GPIO_27_LO}
+      Sets the specified GPIO output low
+
+      ${SET_FLAG_1_HI}
+      Sets the specified status flag high
+
+      ${SET_FLAG_1_LO}
+      Sets the specified status flag low
+
+      ${SET_FLAG_2_HI}
+      Sets the specified status flag high
+
+      ${SET_FLAG_2_LO}
+      Sets the specified status flag low
+
+      ${SET_FLAG_3_HI}
+      Sets the specified status flag high
+
+      ${SET_FLAG_3_LO}
+      Sets the specified status flag low
+
+      ${SET_FLAG_4_HI}
+      Sets the specified status flag high
+
+      ${SET_FLAG_4_LO}
+      Sets the specified status flag low
+
+      ${NO_DRAW}
+      Supresses drawing of the status object
+
+      ${SET_VISIBLE}
+      Makes the status object visible
+
+      ${SET_NOT_VISIBLE}
+      Makes the status object invisible
+
+      ${DRAW_BITMAP}
+      Draw user defined bitmaps, as specified by the Bitmap parameter.  The bitmap will occupy the entire status 
+      box, and is drawn after any text.  If multiple bitmaps are defined, they will be drawn in turn, each 
+      time the ${DRAW_BITMAP} keyword is executed.  Bitmaps remain visible until a ${UNDRAW_BITMAP} command 
+      is executed.
+
+      ${DRAW_RANDOM_BITMAP}
+      Draw a random user defined bitmap, chosen from the specified Bitmap parameters.
+
+      ${UNDRAW_BITMAP}
+      Undraw the bitmap
+
+      ${DRAW_VIDEO}
+      Draw the video
+
+      ${UNDRAW_VIDEO}
+      Undraw the video
+
+      ${START_VIDEO}
+      Start video playing
+
+      ${STOP_VIDEO}
+      Stop video playing
+
+      ${PAUSE_VIDEO}
+      Pause video playing
+
+      ${UNPAUSE_VIDEO}
+      Un-pause video playing
+
+      ${STOP_TIMER}
+      Stop the status TimerTick timer
+
+      ${START_TIMER}
+      Start the status TimerTick timer
+
+      ${RESET_TIMER}
+      Reset the status TimerTick timer
+
+      ${PLAY_SOUND}
+      Play the sound as defined by the Sound parameter
+
+      ${STOP_SOUND}
+      Stop the sound as defined by the Sound parameter
+
+      ${IF_FREEPLAY}
+      Activates the text following it if Free Play mode is enabled
+
+      ${IF_NOT_FREEPLAY}
+      Activates the text following it if Free Play mode is disabled
+
+      ${IF_NO_CREDITS}
+      Activates the text following it if no credits are available
+
+      ${IF_ANY_CREDITS}
+      Activates the text following it if credits are available
+
+      ${IF_SONG_PLAYING}
+      Activates the text following it if a song is currently playing
+
+      ${IF_NOT_SONG_PLAYING}
+      Activates the text following it if no song is currently playing
+
+      ${IF_ATTRACT_PLAYING}
+      Activates the text following it if a song is currently playing via attract
+
+      ${IF_NOT_ATTRACT_PLAYING}
+      Activates the text following it if no song is currently playing via attract
+
+      ${IF_FILE_PLAYING}
+      Activates the text following it if the song is currently playing is a local mp3 file
+
+      ${IF_NOT_FILE_PLAYING}
+      Activates the text following it if the song is currently playing is not a local mp3 file
+
+      ${IF_VIDEO_PLAYING}
+      Activates the text following it if the song is currently playing is a video
+
+      ${IF_NOT_VIDEO_PLAYING}
+      Activates the text following it if the song is currently playing is not a video
+
+      ${IF_STREAM_PLAYING}
+      Activates the text following it if the song is currently playing is a streaming (internet radio) song
+
+      ${IF_NOT_STREAM_PLAYING}
+      Activates the text following it if the song is currently playing is not a streaming (internet radio) 
+      song
+
+      ${IF_SONG_LOADING}
+      Activates the text following it if a song is currently loading
+
+      ${IF_NOT_SONG_LOADING}
+      Activates the text following it if no song is currently loading
+
+      ${IF_SONG_UNLOADING}
+      Activates the text following it if a song is currently unloading
+
+      ${IF_NOT_SONG_UNLOADING}
+      Activates the text following it if no song is currently unloading
+
+      ${IF_ANY_COMING_UP}
+      Activates the text following it if any songs are coming up
+
+      ${IF_NONE_COMING_UP}
+      Activates the text following it if no songs are coming up
+
+      ${IF_SONG_COMING_UP}
+      Activates the text following it if there is another song in the play queue.  This is different to the 
+      ${IF_ANY_COMING_UP} keyword because it refers to the next coming up entry rather than the complete play 
+      queue
+
+      ${IF_ATTRACT_MODE}
+      Activates the text following it if Auto Play mode is enabled
+
+      ${IF_NOT_ATTRACT_MODE}
+      Activates the text following it if Auto Play mode is disabled
+
+      ${IF_LOOPQUEUE_MODE}
+      Activates the text following it if Loop mode is enabled
+
+      ${IF_NOT_LOOPQUEUE_MODE}
+      Activates the text following it if Loop mode is disabled
+
+      ${IF_TIMER_HI}
+      Activates the text following it if the status timer is high.  The value of 'TimerTickPeriod' for the 
+      status object in the configuration file determines the rate at which the timer toggles between high and 
+      low.  i.e. TimerTickPeriod = 30 means the timer will be high for 30 video frames, then low for 30 video 
+      frames, repeating indefinitely
+
+      ${IF_TIMER_LO}
+      Activates the text following it if the status timer is low
+
+      ${IF_TIMER_TICK}
+      Activates the text following it when the status timer ticks (each tick occurs every TimerTickPeriod video 
+      frames
+
+      ${IF_MUTE}
+      Activates the text following it when the song volume is muted
+
+      ${IF_NOT_MUTE}
+      Activates the text following it when the song volume is not muted
+
+      ${IF_TITLE_STRIP_MOVING}
+      Activates the text following it when the song title_strips are moving
+
+      ${IF_NOT_TITLE_STRIP_MOVING}
+      Activates the text following it when the song title_strips are not moving
+
+      ${IF_PLAYQUEUE_EMPTY}
+      Activates the text following it if the play queue is empty
+      (includes currently playing song)
+
+      ${IF_NOT_PLAYQUEUE_EMPTY}
+      Activates the text following it if the play queue is not empty
+      (includes currently playing song)
+
+      ${IF_PLAYQUEUE_FULL}
+      Activates the text following it if the play queue is full
+      (includes currently playing song)
+
+      ${IF_NOT_PLAYQUEUE_FULL}
+      Activates the text following it if the play queue is not full
+      (includes currently playing song)
+
+      ${IF_STEREO}
+      Activates the text following it if the current song is stereo
+
+      ${IF_NOT_STEREO}
+      Activates the text following it if the current song is not stereo
+
+      ${IF_PAUSED}
+      Activates the text following it if the current song is paused
+
+      ${IF_NOT_PAUSED}
+      Activates the text following it if the current song is not paused
+
+      ${IF_INSTANT_PLAY}
+      Activates the text following it if Instant Play mode is set
+
+      ${IF_NOT_INSTANT_PLAY}
+      Activates the text following it if Instant Play mode is not set
+
+      ${IF_INVALID_CHOICE}
+      Activates the text following it if the last song selection was invalid
+
+      ${IF_NOT_INVALID_CHOICE}
+      Activates the text following it if the last song selection was not invalid
+
+      ${IF_DUPLICATE_CHOICE}
+      Activates the text following it if the last song selection was a duplicate choice
+
+      ${IF_NOT_DUPLICATE_CHOICE}
+      Activates the text following it if the last song selection was not a duplicate choice
+
+      ${IF_VISIBLE}
+      Activates the text following it if the status object is visible
+
+      ${IF_NOT_VISIBLE}
+      Activates the text following it if the status object is invisible
+
+      ${IF_FLAG_1_HI}
+      Activates the text following it if the specified status flag is high
+
+      ${IF_FLAG_1_LO}
+      Activates the text following it if the specified status flag is low
+
+      ${IF_FLAG_2_HI}
+      Activates the text following it if the specified status flag is high
+
+      ${IF_FLAG_2_LO}
+      Activates the text following it if the specified status flag is low
+
+      ${IF_FLAG_3_HI}
+      Activates the text following it if the specified status flag is high
+
+      ${IF_FLAG_3_LO}
+      Activates the text following it if the specified status flag is low
+
+      ${IF_FLAG_4_HI}
+      Activates the text following it if the specified status flag is high
+
+      ${IF_FLAG_4_LO}
+      Activates the text following it if the specified status flag is low
+
+      ${END_IF}
+      Marks the end of a text section playing by the preceding $IF_
+
+      ${ELSE}
+      Complement to previous $IF condition
+
+      ${IF_ANY_BUTTON_PRESSED}
+      Activates the text following it if any button is pressed
+
+      ${IF_NOT_ANY_BUTTON_PRESSED}
+      Activates the text following it if any button is not pressed
+
+      ${IF_BUTTON_QUIT_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_QUIT_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_COIN1_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_COIN1_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_COIN2_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_COIN2_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_COIN3_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_COIN3_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_COIN4_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_COIN4_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_COIN5_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_COIN5_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_COIN6_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_COIN6_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_VOLUP_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_VOLUP_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_VOLDOWN_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_VOLDOWN_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_RANDOM_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_RANDOM_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_SELECT_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_SELECT_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_SKIP_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_SKIP_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_PAUSE_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_PAUSE_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_UP_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_UP_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_DOWN_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_DOWN_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_LEFT_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_LEFT_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_RIGHT_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_RIGHT_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_LEFT_SCREEN_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_LEFT_SCREEN_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_RIGHT_SCREEN_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_RIGHT_SCREEN_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_LEFT_SORT_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_LEFT_SORT_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_RIGHT_SORT_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_RIGHT_SORT_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_ATTRACT_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_ATTRACT_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_LOOPQUEUE_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_LOOPQUEUE_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_FREEPLAY_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_FREEPLAY_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_CLEARQUEUE_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_CLEARQUEUE_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_MUTE_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_MUTE_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_0_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_0_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_1_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_1_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_2_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_2_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_3_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_3_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_4_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_4_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_5_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_5_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_6_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_6_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_7_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_7_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_8_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_8_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_9_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_9_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_A_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_A_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_B_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_B_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_C_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_C_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_D_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_D_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_E_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_E_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_F_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_F_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_G_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_G_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_H_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_H_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_I_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_I_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_J_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_J_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_K_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_K_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_L_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_L_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_M_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_M_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_N_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_N_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_O_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_O_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_P_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_P_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_Q_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_Q_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_R_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_R_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_S_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_S_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_T_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_T_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_U_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_U_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_V_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_V_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_W_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_W_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_X_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_X_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_Y_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_Y_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_Z_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_Z_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_POWER_OFF_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_POWER_OFF_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_FLAG1_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_FLAG1_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_FLAG2_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_FLAG2_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_FLAG3_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_FLAG3_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+      ${IF_BUTTON_FLAG4_PRESSED}
+      Activates the text following it if the specified button is pressed
+
+      ${IF_NOT_BUTTON_FLAG4_PRESSED}
+      Activates the text following it if the specified button is not pressed
+
+    The variables beginning ${IF_*}, ${IF_NOT_*} and ${ELSE} are used to conditionally execute or ignore 
+    the text in the config file which follows it, upto the next ${END_IF} (or end of the line).  Note that 
+    IF conditions cannot span lines in the text file (unless the line ends with the '' line concatentation 
+    character).  Variables which do not begin with $IF specify dedicated jukebox status such as song names, 
+    etc.
+    
+    Each line in the Contents file corresponds to a unique line in the status output, and are therefore treated 
+    separately. A single line in the status object can be split across multiple lines in the Contents file, 
+    to aid readability.  If a line ends with the '\' character, then it is joined with the following line, 
+    allowing long and/or complex expressions to be split across multiple lines, but treated as one line entry.
+    
+    Each status box can also include images for cover art for the currently playing song, and other user 
+    defined bitmaps.  Any image will be scaled to cover the entire status box.
+    
+    Hint: For best performance, it is advisable to limit the number of $ variables in a status box.  It is 
+    better to group status variables together depending upon when they change; for example try not to mix 
+    status which changes regularly (like now playing elapsed time) with status that doesn't change regularly 
+    (such as 'coming up' status) in one status box.  This is because the entire contents of a status box 
+    is re-drawn if just one element changes.
+
+
+  14: Sound Effects
+
+  Sound effects can be added in status objects by using the Sound parameter.  These are then referenced 
+  in the status Contents file using the ${PLAY_SOUND} and ${STOP_SOUND} variables.  This flexibility allows 
+  sound effects to be played under many different conditions, such as ... button presses, song loading/unloading, 
+  coin insertion, title strip movements, song selections, etc.
+
+
+  15: Status Flags
+
+  Four status flags allow for inter-status communication and user triggered status events.  Each status 
+  flag can be set high or low from button presses (toggle) and/or status $variables.  The values of the 
+  flags can be read in status objects, allowing support for functionality such as...
+  
+  1. Inter status communication:
+  for example one status object could toggle a flag with a certain timer tick period which could then be 
+  detected in a different status object with a different timer tick period. This would allow status to 
+  "time-out" after being started from a different timer period (or a button press).
+  
+  2. Button invoked status display:
+  The 'Flag*' buttons can be used to turn on and off status information.
+  
+  In addition to the above, the DynamicEnableFlag parameter in some display objects can be used to directly 
+  enable or disable any dynamic parameters the object has.
+
+
+  16: GPIO Input/Output
+
+  fruitbox can use the GPIO pins for both input and output:
+  
+  When a button is defined which uses a GPIO pin, the GPIO pin is automatically configured as an input, 
+  with an internal pullup resistor.  You then just have to ensure that the hardware button is connected 
+  between this GPIO pin and GND.  Both normally-open and normally-closed switches are supported (fruitbox 
+  will auto-detect the type on power-up, so ensure no buttons are pressed when fruitbox is started).
+  
+  When a ${SET_GPIO*} variable is encountered in a status object Contents file, the specified GPIO pin 
+  is automatically configured as an output.
+  
+  Note that if the same pin is defined in both the button mapping file and a status object, then input 
+  will take precedence over the output, hence the status output will not work.
+  
+  The fruitbox developer assumes no responsibility for any damage caused to the Raspberry Pi or connected 
+  hardware due to the use of the GPIO pins from fruitbox, so please make sure you choose your GPIO pin 
+  assignments carefully ;)
+
