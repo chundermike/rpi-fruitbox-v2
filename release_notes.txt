@@ -1,0 +1,326 @@
+fruitbox Release Notes:
+
+-----------------------------------
+version 2.00
+-----------------------------------
+
+Note: version 2.00 onwards is not compatible with previous fruitbox versions due to changes in skin configuration
+      file format.
+      
+** Highlights **
+
+-> Internet Radio (mp3 url stream) playback with SHOUTcast suppport
+-> Song Search feature
+-> Genre-specific title strips
+-> Real-time Audio Frequency Spectrum
+-> Scrolling status text
+-> Extra Select Buttons (L to Z)
+-> Simpler, more efficient and flexible music path and database handling
+-> Mouse control (with configurable mouse button and pointer graphic)
+-> Support for ReplayGain/RVA auto gain adjustment
+-> Dumping of title strips to graphic files for printing out
+-> Song auto-play (attract mode) enhancements (start and stop position, fade in and out, choice of random or sorted)
+-> Instant song play mode
+-> Global config (fruitbox.ini) file for non-skin-specific parameters
+-> Button configuration via on screen menu, and buttons use more meaningful linux naming convention
+-> Touch screen calibration via on screen menu
+-> Software update from on screen menu
+-> More flexible credit control (allowing multiple coins per play support, and increased number of coins suppored from 4 to 6)
+-> Support for ELO Touchscreens
+-> Support for normally-open and normally-closed buttons on GPIO inputs
+-> Reversed TitleStrip move option (on individual title strips)
+-> Dedicated screenshot button rather than command line
+-> Song sorting now supports descending and ascending order
+-> command line argument for rotating display
+-> Bug-fixes
+-> Performance improvements
+
+For skin designers; changes and enhancements to configuration file format...
+-> Dynamic display object parameters
+-> Extra status drawing effects (clip, flip, tint, visible)
+-> More flexible sound effect management
+-> Simplified touch button animation and touch input setup
+-> Clearer status Contents file expressions, using $variables enclosed bash-style curly brackets,
+   the new ${ELSE} keyword, and line concatentation
+-> Times can now be specified in seconds, minutes and hours as well as video ticks
+
+Change details...
+
+Improved ease of use:
+
+On-screen Menus allowing...
+  -> Non-skin specific parameters to be modified
+  -> Button configuration
+  -> Song search / filter
+  -> Latest release checking and downloading from Github
+
+Simplified button configuration...
+  -> Button mapping now named with meaningful (linux) key/button labels
+  -> Touch inputs automatically assigned for touch based skins when touch screens detected
+  -> Configure buttons now performed on an individual button basis via on screen menu rather
+     than needing to configure every button in turn.
+
+Database generation simplified, and with more efficient refreshing...
+  -> Only MusicPath(s) need to be specified, Database parameter removed
+  -> Database files are handled invisibly and automatically
+  -> Multiple database files (one in each directory/sub-directory) allow
+     faster, partial refreshing/updating, and database file sharing for
+     different MusicPaths
+  -> Ignoring of files prefixed with "._" (Mac system files)
+
+Non-skin specific parameters are now stored in a global ini file
+
+MusicPath value(s) can be specified in the ini file, to allow
+common music sources to be specified regardless of skin.  However, they can still be 
+specified in the skin file which will override the ini file values, to allow skins to 
+be associated with their own music libraries.  MusicPath values can still be specified
+in the --music-path command line arguments, which will override both ini and skin values.
+
+Skins can now be specified using the --skin (or --cfg) command line arguments, or in the 
+[skins] section of the ini file.  If more than one [skins] entry is presenmt, the skin
+chooser is automatically invoked.  This makes it easier to change skins by editing the ini
+file rather than modifying the fruitbox command line arguments.
+
+The following have been moved from the skin file to the fruitbox.ini file...
+
+-> MaxPlaylistLength
+-> LoopPlaylist
+-> PlaysPerCoin1 (Renamed to CreditsPerCoin1)
+-> PlaysPerCoin2 (Renamed to CreditsPerCoin2)
+-> PlaysPerCoin3 (Renamed to CreditsPerCoin3)
+-> PlaysPerCoin4 (Renamed to CreditsPerCoin4)
+-> SongVolume
+
+... and the following new parameters added...
+
+-> CreditsPerCoin5
+-> CreditsPerCoin6
+-> CreditsPerSong
+-> SongVolumeStep
+-> IgnoreArtistPrefixThe
+-> [attract mode]
+->   Enable
+->   Choice
+->   Interval
+->   FadeIn
+->   FadeOut
+->   FadeInPosition
+->   FadeOutPosition
+    
+-> Changed --cfg command line argument to --skin
+
+-> Changed --no-database-update command line argument to --no-database-refresh
+
+-> Added --rotate <angle> command line option to rotate display through <angle> degrees
+
+-> Removed --test-buttons, --config-buttons and --calibrate-touch command line options
+  -> Now done through on-screen menu, except test buttons, which has been completely removed
+
+-> Removed --button-map command line option...
+  -> Button mappings now stored in fruitbox.ini [buttons], rather than a separate (fruitbox.btn) file
+  -> Touch Screen calibration data now stored in fruitbox.ini [touch screen] TopLeft and BottomRight parameters
+
+-> Removed --choose-cfg command line option...
+  -> skin chooser now invoked automatically when no command line arguments specified
+  -> List of chooseable skins now stored in fruitbox.ini [skins] section
+  -> skin chooser bypassed if only one entry in [skins] is defined
+  -> --skin command line option overrides [skins] ini file entries
+
+-> Removed --screenshot command line option...
+  -> Screenshot can now be taken using the Screenshot button (default keyboard 'Right Ctrl')
+     which allows the screenshot to be taken at any time, and without interruption to fruitbox operation
+
+-> Added --dump-title-strips command line option...
+  -> This causes all title strips to be written to individual graphic (png) files for printing out
+     for real jukebox title strips.
+
+-> Added ButtonL..ButtonZ to extend select codes
+  -> Changed default buttons which used to use these characters
+  -> ButtonLeftJump renamed ButtonLeftScreen
+  -> ButtonRightJump renamed ButtonRightScreen
+  -> ButtonLeftAlpha renamed ButtonLeftSort
+  -> ButtonRightAlpha renamed ButtonRightSort
+  -> ButtonFree renamed ButtonFreePlay
+  -> ButtonLoop renamed ButtonLoopQueue
+  -> ButtonClear renamed ButtonClearQueue
+  -> ButtonAuto renamed ButtonAutoPlay
+
+-> GPIO Inputs can now be connected to either Normally-Open (as before) and Normally-Closed.
+   fruitbox will autodetect the type at start up (so make sure no buttons are pressed otherwise
+   the detection won't give the correct result).  Each GPIO input can have it's own type.
+   
+-> Added new fruitbox.ini [joystick] parameter 'DisableTitleStripFlip  = <Yes|No>' to prevent
+   title strips flipping with left/right when in joystick mode.  Title strips can still be flipped
+   using the LeftScreen, RightScreen, LeftSort and RightSort buttons.
+   
+-> Added new fruitbox.ini parameter 'IgnoreArtistPrefixThe = <Yes|No>' to ignore 'The '
+   artist prefix when sorting songs by artist (so for example, "The Beatles" will
+   be sorted next to "Beatles")
+
+-> Added Internet Radio mode
+  -> mp3 files can now be played from url streams
+  -> m3u and pls file formats recognised when creating database
+  -> Support for ICY (SHOUTcast) metadata for now playing information
+  
+-> AutoPlay mode renamed to Attract mode, and new features added...
+   New parameters (see fruitbox.ini) allow a sort of "preview" mode for auto played songs.
+   Small sections of a song can be played (defined by the FadeInPosition and FadeOutPosition), with
+   configurable fade in and fade out times.  Optionally, the song load and song unload sequences
+   can be disabled for songs played in attract mode.  Songs can be selected randomly (as in previous versions)
+   or play through the song database in their sorted order.
+
+-> Added Instant Play mode (non play-queue mode)
+   Selecting a song causes the currently playing song to stop immediately and the new selected song to start
+   (Useful for internet radio streaming skins in which currently playing stream has infinite length)
+   
+-> Software update from on screen menu
+  -> when requested, fruitbox will remotely fetch latest fruitbox version from GitHub  
+
+-> Key mappings now use meaningful (linux) labels
+  
+-> User-guide changes:
+    -> Cleaned up (and restored) skin parameter descriptions.
+    -> Moved skin configuration description to nearer end of user-guide to allow
+       basic operation instructions to be detailed first.
+
+-> Button names have had their "Button" prefix removed
+
+-> Added (undocumented) --no-splash command line option to disable the splash screen.  Ah...looks like I just documented it
+
+-> Duplicate button mappings no longer generate an error
+
+-> Freeplay mode now a dedicated parameter (no longer dependent on plays-per-coin parameters)
+
+-> dot underscore files (Mac system files) ignored when generating database
+
+-> GPIO accessed using /dev/gpiomem rather than /dev/mem
+   -> This means that fruitbox no longer needs to run in superuser mode (i.e. sudo ./fruitbox)
+
+-> Bug-fixes...
+  -> Ignore autorepeat for EV_KEY input events
+  -> Fixed input device false pairing when Phys field is empty
+  -> Fix for input devices declaring kbd and mouse handlers in same handler entry (and losing kbd detection)
+  -> Fix for out of GPU memory (glGetError0x505) errors on Album skins with TitleStrip Album art
+  -> NoDuplicates now compares song title and artist rather than just song title
+  -> Changing volume now correctly updates the (un)mute status
+  -> ${RESET_TIMER} now correctly resets ${TIMER_HI/LO} flags
+  -> PowerOff button now saves playlist (if specified with the --save-playlist command line option)
+
+Changes to skin design parameters...
+
+-> All TitleStrip/page references now renamed to TitleStrip/title strip to reflect correct jukebox
+   terminology.  Note any references to 'page' in the following notes, should now be read as 
+   title strip.
+
+-> Simplified touch skin support
+  -> [touch areas] and [touch songs] skin sections have been merged into a single [touch areas] section
+     -> touch song mode is now activated by specifying the "[touch areas] TitleStrip" parameter
+  -> buttons are automatically mapped to touch input if their touch area is defined in a skin (and a touchscreen
+     is detected)
+  -> Skins no longer need to use a status object to draw a bitmap when a button is pressed (for touch screen
+     animated buttons). Just specify a bitmap file after the button position and size parameters in the 
+     [touch areas] skin section, and that bitmap wil be drawn when that button is pressed.
+     Note: The old way (via status objects) is still supported, if buttons need to be animated for non-touch inputs.
+
+-> Added extra configuration parameters for skin configuration objects
+   which allows them to be flipped horizontally and/or vertically,
+   their visibility, colour (and transparancy) changed, and also clipped
+  -> Visible
+  -> HorizontalFlip
+  -> VerticalFlip
+  -> Tint
+  -> Clip
+  -> Visible
+
+-> Dynamic display object parameter options
+  -> Size, Position, Clip, Angle and Tint parameters have been extended for [bitmap], [status] and
+     [spectrum] display objects, and can now dynamically change for timers, volume, random,
+     now playing elapsed time, spectrum frequency band, song load/unload position and currently displayed
+     page values.
+  -> Dynamic operation can be enabled and disabled in real-time using any of the four status flags.
+  -> [bitmap] HorzScale, HorzScaleMode, VertScale, VertScaleMode and ReverseClip parameters
+     have been removed as they are replaced by the new, more flexible dynamic parameter options.
+  
+-> New [spectrum] display object
+  -> Displays real-time audio frequency spectrum for currently playing song
+  -> Uses any bitmap file for band graphic
+  -> Scaled, Clipped or Position mode for band graphics
+  -> Configurable number of visible bands
+  -> Configurable gain for each band
+  -> Configurable position offset for each band
+  -> Configurable decay speed
+  -> Supports common display object parameters (size, position, angle, flip, tint)
+  
+-> SkinDescription in skins [general] config section now supports multi-entry.
+
+-> Moved [page] "Background" parameter into [general] "TitleStripBackground" and
+   added optional "genre" argument to allow title strip backgrounds to be genre-specific
+   (i.e. different title strip graphic images for different genres).
+
+-> Changed ButtonVol+ to ButtonVolUp, and ButtonVol- to ButtonVolDown.
+
+-> Added [general] SongHistoryIncludeUserSelection
+
+-> Add [title strip] "MoveReverse" parameter to allow title strips to move in opposite directions (with respect to each other).
+
+-> TitleStrip (Title Strip) description skin parameters (i.e. SongDescription, etc.) have been simplified...
+  -> No longer require multiple lines to construct a description.
+  -> Changed names of reserved words for song descriptions from Camel case (i.e. AlbumArtist)
+     to ${VARIABLE} format (i.e. ${ALBUM_ARTIST} for more consistency with status variables.
+  -> Added ${LENGTH} and ${PAIRED_LENGTH} to song description reserved words.
+  -> Added ${STRIP_CODE} and ${PAIRED_STRIP_CODE} to song description reserved words to allow select
+     code to be included in title strips (similar to --debug-song-nums command line option).
+  -> ExtraDescription parameter can now be specified multiple times for unlimited extra text entries.
+
+-> multiple [font] sections now replaced by one [fonts] section, and font numbering starts
+   at 1 (not 0, which is now the built-in fruitbox font, available for skins).
+
+-> Removed the [sounds] skin configuration section, and replaced with "Sound" in the [status]
+   skin objects.  This provides much more flexible sound effect support and allows sound effects to be
+   played under many more circumstances.
+   -> SongVolume has now been moved from the [sounds] section to the [settings] section of fruitbox.ini.
+   -> New configuration parameter 'SongVolumeStep' now allows volume steps to be adjusted (rather than 
+      only ten volume steps previously)
+
+-> Added new status text "scroll" mode, allowing status text to scroll horizontally instead of being clipped
+   or condensed if too large to fit in the available status object width. Scroll speed is determined by the
+   status TimerTickPeriod and the scroll (jump) value itself.
+
+-> Added optional units (ticks, seconds, minutes, hours) to time parameters, to remove time value
+   dependency on video frame rate.
+
+-> Changes to [status] Contents files...
+  -> Added ${ELSE} for simplifying conditional constructs.
+  -> Added \ for concatenating lines.
+  -> $variables must now be enclosed in curly brackets.
+     This has been done to make the contents easier to read.
+   
+-> Added new status variables...
+  -> ${NUM_SEARCH_SONGS}
+  -> ${SET_VISIBLE}
+  -> ${SET_NOT_VISIBLE}
+  -> ${IF_VISIBLE}
+  -> ${IF_NOT_VISIBLE}
+  -> ${PLAY_SOUND}
+  -> ${STOP_SOUND}
+  -> ${TOTAL_PLAYED_SONGS}
+  -> ${TOTAL_PLAYED_TIME}
+  -> ${PLAYQUEUE_SPACE}
+  -> ${IF_SONG_ATTRACT_PLAYING}
+  -> ${IF_NOT_SONG_ATTRACT_PLAYING}
+  -> ${NOW_PLAYING_STREAM_TITLE}
+  -> ${NOW_PLAYING_STREAM_URL}
+  -> ${IF_STREAM_PLAYING}
+  -> ${IF_NOT_STREAM_PLAYING}
+  -> ${IF_FILE_PLAYING}
+  -> ${IF_NOT_FILE_PLAYING}
+  -> ${IF_VIDEO_PLAYING}
+  -> ${IF_NOT_VIDEO_PLAYING}
+
+-> Renamed status variables...
+  -> IF_/NOT_BUTTON_AUTO_PRESSED  to IF_/NOT_BUTTON_AUTOPLAY_PRESSED
+  -> IF_/NOT_BUTTON_LOOP_PRESSED  to IF_/NOT_BUTTON_LOOPQUEUE_PRESSED
+  -> IF_/NOT_BUTTON_FREE_PRESSED  to IF_/NOT_BUTTON_FREEPLAY_PRESSED
+  -> IF_/NOT_BUTTON_CLEAR_PRESSED to IF_/NOT_BUTTON_CLEARQUEUE_PRESSED
+  -> _ALPHA -> _SORT, _JUMP -> _SCREEN, AUTO_PLAY -> AUTOPLAY, LOOP -> LOOPQUEUE, FREE -> FREEPLAY, CLEAR -> CLEARQUEUE
+  
