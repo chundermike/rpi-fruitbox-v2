@@ -53,7 +53,7 @@
   keys.  Once a song is selected, it is added to the play queue.  If no song is playing, the song at the 
   top of the play queue is 'loaded', played, and then 'unloaded'.
   
-  Control inputs (buttons) can be re-defined via an on0screen menu or direcrly editing the [buttons] section 
+  Control inputs (buttons) can be re-defined via an on-screen menu or direcrly editing the [buttons] section 
   of the fruitbox ini file.
 
 
@@ -108,13 +108,21 @@
     to the user to delete the database file(s) in order for them to be refreshed.
 
 
-  4.9: --load-playlist <filename>  
+  4.9: --force-database-refresh    
+
+    Normally fruitbox will refresh the database if any database files (fruitbox.db) have a modification time 
+    earler than the contents of the directories they are in.  This option overrides this check, and always 
+    refreshes the database file(s).  This is useful if the user for example changes anything which is created 
+    or used when the database is created (i.e. CustomMP3Tag).
+
+
+  4.10: --load-playlist <filename>  
 
     Loads a playlist file and populates the play queue with the songs in it; fruitbox will begin playing 
     the songs after it has started up.
 
 
-  4.10: --save-playlist <filename>  
+  4.11: --save-playlist <filename>  
 
     When fruitbox exits (by the user pressing the 'Quit' button), this option saves the contents of the play 
     queue (and currently playing song) to the specified file.  This can subsequently be loaded back into 
@@ -122,7 +130,7 @@
     filenames which can easily be edited by hand to modify the playlist as required.
 
 
-  4.11: --dump-title-strips         
+  4.12: --dump-title-strips         
 
     This option causes every title strip to be written to a unique png image file. fruitbox will then quit 
     without running.  If fruitbox is used in a real jukebox which has real (paper) title strips and not on-screen 
@@ -135,7 +143,7 @@
     since the title strips are defined in the skin.
 
 
-  4.12: --no-scale                  
+  4.13: --no-scale                  
 
     Normally fruitbox will scale (resize) the skin to the display, so no matter what its size, it will always 
     fit exactly.  This option turns off the scaling so the skin will be shown at its original size (useful 
@@ -144,7 +152,7 @@
     the outer edges of the skin will not be visible.
 
 
-  4.13: --rotate <angle>            
+  4.14: --rotate <angle>            
 
     This option allows the display to be rotated by <angle> degrees.  Please note that if using a touch based 
     skin, this will affect operation of the touch co-ordinates and the skin may have to be modified.
@@ -163,157 +171,156 @@
   the touch screen calibration is automatically run.
 
       [general]
-      MusicPath *                   <filename> of path to music files (mp3, ogv, m3u, pls).  Can contain sub-directories.
+      MusicPath *                     <filename> of path to music files (mp3, ogv, m3u, pls).  Can contain sub-directories.
 
-      CustomMP3Tag                  <name> of an MP3 ID3v2 tag the user wishes to extract to a song's 'Custom' field (e.g. "TCON" is content type)
-                                    Note: this is only used during database file *creation*
-      MaxPlaylistLength             <number> Maximum number of songs which can be stored in the coming up queue
-      LoopPlaylist                  <yes|no>
-                                    Yes : a song is added to the back of the play queue when it has finished playing (credits permitting)
-      IgnoreArtistPrefixThe         <yes|no>
-                                    Yes : ignore 'The ' beginning word in artist names
-      SongHistoryDepth              <number> Determines the search range of number of previously played songs to ensure
-                                    no repeated songs are chosen in Auto play or Random selection.
-                                    If not specified or set to zero, fruitbox will only check for
-                                    repeated songs from within the play queue
-      SongHistoryIncludeUserSelection<yes|no> User selection is included or excluded from the history search
-      SongVolume                    <volume> Initial song volume (0..100)
-      SongVolumeStep                <step> Song volume step (0..100) (amount changed for VolumeUp / VolumeDown)
-      ReplayGain                    <none|track|album> (automatic gain adjustment - requires MP3 ReplayGain tag data)
-      FreePlay                      <yes|no>
-                                    Yes : Credits/coins are not required to add a song to the play queue
-      CreditsPerCoin1               <number> of song credits added when a coin is inserted
-      CreditsPerCoin2               <number> of song credits added when a coin is inserted
-      CreditsPerCoin3               <number> of song credits added when a coin is inserted
-      CreditsPerCoin4               <number> of song credits added when a coin is inserted
-      CreditsPerCoin5               <number> of song credits added when a coin is inserted
-      CreditsPerCoin6               <number> of song credits added when a coin is inserted
-      CreditsPerSong                <number> of song credits required to play one song
-      MenuColour                    <r> <g> <b> Modify the on-screen menu colour
+      CustomMP3Tag                    <name> of an MP3 ID3v2 tag the user wishes to extract to a song's 'Custom' field (e.g. "TCON" is content type)
+                                      Note: this is only used during database file *creation*
+      MaxPlayQueueLength              <number> Maximum number of songs which can be stored in the coming up queue
+      LoopPlayQueue                   <yes|no>
+                                      Yes : a song is added to the back of the play queue when it has finished playing (credits permitting)                                      Note this option is ignored if the [general] NoDuplicates parameter is enabled in the skin configuration file
+      IgnoreArtistPrefixThe           <yes|no>
+                                      Yes : ignore 'The ' beginning word in artist names
+      SongHistoryDepth                <number> Determines the search range of number of previously played songs to ensure
+                                      no repeated songs are chosen in Attract mode or Random selection.
+                                      If not specified or set to zero, fruitbox will only check for
+                                      repeated songs from within the play queue
+      SongHistoryIncludeUserSelection <yes|no> User selection is included or excluded from the history search
+      SongVolume                      <volume> Initial song volume (0..100)
+      SongVolumeStep                  <step> Song volume step (0..100) (amount changed for VolumeUp / VolumeDown)
+      ReplayGain                      <none|track|album> (automatic gain adjustment - requires MP3 ReplayGain tag data)
+      FreePlay                        <yes|no>
+                                      Yes : Credits/coins are not required to add a song to the play queue
+      CreditsPerCoin1                 <number> of song credits added when a coin is inserted
+      CreditsPerCoin2                 <number> of song credits added when a coin is inserted
+      CreditsPerCoin3                 <number> of song credits added when a coin is inserted
+      CreditsPerCoin4                 <number> of song credits added when a coin is inserted
+      CreditsPerCoin5                 <number> of song credits added when a coin is inserted
+      CreditsPerCoin6                 <number> of song credits added when a coin is inserted
+      CreditsPerSong                  <number> of song credits required to play one song
+      MenuColour                      <r> <g> <b> Modify the on-screen menu colour
+      MenuBackgroundColour            <r> <g> <b> <a> Modify the on-screen menu background colour
 
       [attract mode]
-      Enable                        <yes|no>
-                                    Yes : a random song is played if the play queue is empty and no songs are playing
-      Choice                        <random|sorted>
-                                    Determines if the songs in attract mode are selected randomly or in the order in which they are sorted
-      Interval                      <time> [ticks|seconds|minutes|hours] The time between a random song being selected and played after the last song has finished playing
-      MaxVolume                     <0 to 100> Maximum volume of auto played song (with respect to current volume level)
-      FadeIn                        <time> [ticks|seconds|minutes|hours] Length of fade in time of auto play song (0 = no fade in)
-      FadeOut                       <time> [ticks|seconds|minutes|hours] Length of fade out time of auto play song (0 = no fade out)
-      FadeInPosition                <time> [ticks|seconds|minutes|hours] Start time of auto play song
-      FadeOutPosition               <time> [ticks|seconds|minutes|hours] Stop time of auto play song
-      SkipLoad                      <yes|no>
-                                    Yes : Auto played songs don't invoke load / unload sequences
+      Enable                          <yes|no>
+                                      Yes : a random song is played if the play queue is empty and no songs are playing
+      Choice                          <random|sorted>
+                                      Determines if the songs in attract mode are selected randomly or in the order in which they are sorted
+      Interval                        <time> [ticks|seconds|minutes|hours] The time between a random song being selected and played after the last song has finished playing
+      MaxVolume                       <0 to 100> Maximum volume of attract mode song (with respect to current volume level)
+      FadeIn                          <time> [ticks|seconds|minutes|hours] Length of fade in time of attract mode song (0 = no fade in)
+      FadeOut                         <time> [ticks|seconds|minutes|hours] Length of fade out time of attract mode song (0 = no fade out)
+      FadeInPosition                  <time> [ticks|seconds|minutes|hours] Start time of attract mode song
+      FadeOutPosition                 <time> [ticks|seconds|minutes|hours] Stop time of attract mode song
+      SkipLoad                        <yes|no>
+                                      Yes : attract mode songs don't invoke load / unload sequences
 
       [skins]
-      File *                        <filename> of skin configuration file
+      File *                          <filename> of skin configuration file
 
       [buttons]
-      Quit                          <name> of button (quit fruitbox)
-      Coin1                         <name> of button (insert coin)
-      Coin2                         <name> of button (insert coin)
-      Coin3                         <name> of button (insert coin)
-      Coin4                         <name> of button (insert coin)
-      Coin5                         <name> of button (insert coin)
-      Coin6                         <name> of button (insert coin)
-      VolUp                         <name> of button (change volume)
-      VolDown                       <name> of button (change volume)
-      Random                        <name> of button (select random song)
-      Select                        <name> of button (play selected song)
-      Skip                          <name> of button (stop current song)
-      Pause                         <name> of button (pause/unpause currently playing song)
-      Up                            <name> of button (joystick selector)
-      Down                          <name> of button (joystick selector)
-      Left                          <name> of button (move title_strips/joystick selector)
-      Right                         <name> of button (move title_strips/joystick selector)
-      LeftScreen                    <name> of button (move title_strips by 'ScreenJump' amount)
-      RightScreen                   <name> of button (move title_strips by 'ScreenJump' amount)
-      LeftSort                      <name> of button (move title_strips by last 'SortSongsBy' value)
-      RightSort                     <name> of button (move title_strips by last 'SortSongsBy' value)
-      AttractMode                   <name> of button (toggle Auto (aka Attract) mode)
-      LoopQueue                     <name> of button (toggle Loop mode)
-      FreePlay                      <name> of button (toggle Freeplay mode)
-      ClearQueue                    <name> of button (empty play queue)
-      Mute                          <name> of button (volume mute)
-      PowerOff                      <name> of button (power off)
-      Select0                       <name> of button (song selection)
-      Select1                       <name> of button (song selection)
-      Select2                       <name> of button (song selection)
-      Select3                       <name> of button (song selection)
-      Select4                       <name> of button (song selection)
-      Select5                       <name> of button (song selection)
-      Select6                       <name> of button (song selection)
-      Select7                       <name> of button (song selection)
-      Select8                       <name> of button (song selection)
-      Select9                       <name> of button (song selection)
-      SelectA                       <name> of button (song selection)
-      SelectB                       <name> of button (song selection)
-      SelectC                       <name> of button (song selection)
-      SelectD                       <name> of button (song selection)
-      SelectE                       <name> of button (song selection)
-      SelectF                       <name> of button (song selection)
-      SelectG                       <name> of button (song selection)
-      SelectH                       <name> of button (song selection)
-      SelectI                       <name> of button (song selection)
-      SelectJ                       <name> of button (song selection)
-      SelectK                       <name> of button (song selection)
-      SelectL                       <name> of button (song selection)
-      SelectM                       <name> of button (song selection)
-      SelectN                       <name> of button (song selection)
-      SelectO                       <name> of button (song selection)
-      SelectP                       <name> of button (song selection)
-      SelectQ                       <name> of button (song selection)
-      SelectR                       <name> of button (song selection)
-      SelectS                       <name> of button (song selection)
-      SelectT                       <name> of button (song selection)
-      SelectU                       <name> of button (song selection)
-      SelectV                       <name> of button (song selection)
-      SelectW                       <name> of button (song selection)
-      SelectX                       <name> of button (song selection)
-      SelectY                       <name> of button (song selection)
-      SelectZ                       <name> of button (song selection)
-      Flag1                         <name> of button (toggle status flag)
-      Flag2                         <name> of button (toggle status flag)
-      Flag3                         <name> of button (toggle status flag)
-      Flag4                         <name> of button (toggle status flag)
-      Menu                          <name> of button (fruitbox menu)
-      Search                        <name> of button (song search/filter)
-      Mouse                         <name> of button (mouse select)
-      Screenshot                    <name> of button (take screenshot)
+      Quit                            <name> of button (quit fruitbox)
+      Coin1                           <name> of button (insert coin)
+      Coin2                           <name> of button (insert coin)
+      Coin3                           <name> of button (insert coin)
+      Coin4                           <name> of button (insert coin)
+      Coin5                           <name> of button (insert coin)
+      Coin6                           <name> of button (insert coin)
+      VolUp                           <name> of button (change volume)
+      VolDown                         <name> of button (change volume)
+      Random                          <name> of button (select random song)
+      Select                          <name> of button (play selected song)
+      Skip                            <name> of button (stop current song)
+      Pause                           <name> of button (pause/unpause currently playing song)
+      Up                              <name> of button (joystick selector)
+      Down                            <name> of button (joystick selector)
+      Left                            <name> of button (move title_strips/joystick selector)
+      Right                           <name> of button (move title_strips/joystick selector)
+      LeftScreen                      <name> of button (move title_strips by 'ScreenJump' amount)
+      RightScreen                     <name> of button (move title_strips by 'ScreenJump' amount)
+      LeftSort                        <name> of button (move title_strips by last 'SortSongsBy' value)
+      RightSort                       <name> of button (move title_strips by last 'SortSongsBy' value)
+      AttractMode                     <name> of button (toggle Attract mode)
+      LoopQueue                       <name> of button (toggle Loop mode)
+      FreePlay                        <name> of button (toggle Freeplay mode)
+      ClearQueue                      <name> of button (empty play queue)
+      Mute                            <name> of button (volume mute)
+      PowerOff                        <name> of button (power off)
+      Select0                         <name> of button (song selection)
+      Select1                         <name> of button (song selection)
+      Select2                         <name> of button (song selection)
+      Select3                         <name> of button (song selection)
+      Select4                         <name> of button (song selection)
+      Select5                         <name> of button (song selection)
+      Select6                         <name> of button (song selection)
+      Select7                         <name> of button (song selection)
+      Select8                         <name> of button (song selection)
+      Select9                         <name> of button (song selection)
+      SelectA                         <name> of button (song selection)
+      SelectB                         <name> of button (song selection)
+      SelectC                         <name> of button (song selection)
+      SelectD                         <name> of button (song selection)
+      SelectE                         <name> of button (song selection)
+      SelectF                         <name> of button (song selection)
+      SelectG                         <name> of button (song selection)
+      SelectH                         <name> of button (song selection)
+      SelectI                         <name> of button (song selection)
+      SelectJ                         <name> of button (song selection)
+      SelectK                         <name> of button (song selection)
+      SelectL                         <name> of button (song selection)
+      SelectM                         <name> of button (song selection)
+      SelectN                         <name> of button (song selection)
+      SelectO                         <name> of button (song selection)
+      SelectP                         <name> of button (song selection)
+      SelectQ                         <name> of button (song selection)
+      SelectR                         <name> of button (song selection)
+      SelectS                         <name> of button (song selection)
+      SelectT                         <name> of button (song selection)
+      SelectU                         <name> of button (song selection)
+      SelectV                         <name> of button (song selection)
+      SelectW                         <name> of button (song selection)
+      SelectX                         <name> of button (song selection)
+      SelectY                         <name> of button (song selection)
+      SelectZ                         <name> of button (song selection)
+      Flag1                           <name> of button (toggle status flag)
+      Flag2                           <name> of button (toggle status flag)
+      Flag3                           <name> of button (toggle status flag)
+      Flag4                           <name> of button (toggle status flag)
+      Menu                            <name> of button (fruitbox menu)
+      Search                          <name> of button (song search/filter)
+      Mouse                           <name> of button (mouse select)
+      Screenshot                      <name> of button (take screenshot)
 
       [touch screen]
-      Enable                        <yes|no>
-                                    Yes : touch screen control is enabled
-      TopLeft                       <x> <y> (the touch co-ordinates for top left of touch display)
-      BottomRight                   <x> <y> (the touch co-ordinates for bottom right of touch display)
+      Enable                          <yes|no>
+                                      Yes : touch screen control is enabled
+      TopLeft                         <x> <y> (the touch co-ordinates for top left of touch display)
+      BottomRight                     <x> <y> (the touch co-ordinates for bottom right of touch display)
 
       [mouse]
-      Enable                        <yes|no>
-                                    Yes : mouse control is enabled
-      Bitmap                        <filename> of graphic image (bmp, png, tga, jpg, pcx)
-      Size                          <width> [dynamic] <height> [dynamic] (in pixels)
-      Angle                         <angle> [dynamic] of object in degrees (0..359)
-      Tint                          <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
-      HorizontalFlip                <yes|no> flip object horizontally
-      VerticalFlip                  <yes|no> flip object vertically
-      HotSpot                       <x> <y> (offset in pixels from top left corner of mouse pointer which corresponds to the click position)
-      Sensitivity                   <0.0 .. > sensitivity of mouse movement (1.0 nominal, higher is more sensitive)
-      HideAfter                     <time> [ticks|seconds|minutes|hours] (Hide inactive mouse pointer after this time. 0 = don't hide)
-      DynamicEnableFlag             <1..4> enable dynamic parameters using status flag 1..4
+      Enable                          <yes|no>
+                                      Yes : mouse control is enabled
+      Bitmap                          <filename> of graphic image (bmp, png, tga, jpg, pcx)
+      Size                            <width> <height> (in pixels)
+      Angle                           <angle> of object in degrees (0..359)
+      Tint                            <r> <g> <b> <a> (modify the objects colour)
+      HorizontalFlip                  <yes|no> flip object horizontally
+      VerticalFlip                    <yes|no> flip object vertically
+      HotSpot                         <x> <y> (offset in pixels from top left corner of mouse pointer which corresponds to the click position)
+      Sensitivity                     <0.0 .. > sensitivity of mouse movement (1.0 nominal, higher is more sensitive)
+      HideAfter                       <time> [ticks|seconds|minutes|hours] (Hide inactive mouse pointer after this time. 0 = don't hide)
 
       [joystick]
-      Enable                        <yes|no>
-                                    Yes : joystick control is enabled
-      DisableTitleStripFlip         <yes|no>
-                                    Yes : Title Strip flipping is prevented using left/right in joystick mode
-      Bitmap                        <filename> of graphic image (bmp, png, tga, jpg, pcx)
-      Size                          <width> [dynamic] <height> [dynamic] (in pixels)
-      Angle                         <angle> [dynamic] of object in degrees (0..359)
-      Tint                          <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
-      HorizontalFlip                <yes|no> flip object horizontally
-      VerticalFlip                  <yes|no> flip object vertically
-      Offset                        <x> <y> (offset in pixels from top left corner of joystick highlight in song title region)
-      DynamicEnableFlag             <1..4> enable dynamic parameters using status flag 1..4
+      Enable                          <yes|no>
+                                      Yes : joystick control is enabled
+      DisableTitleStripFlip           <yes|no>
+                                      Yes : Title Strip flipping is prevented using left/right in joystick mode
+      Bitmap                          <filename> of graphic image (bmp, png, tga, jpg, pcx)
+      Size                            <width> <height> (in pixels)
+      Angle                           <angle> of object in degrees (0..359)
+      Tint                            <r> <g> <b> <a> (modify the objects colour)
+      HorizontalFlip                  <yes|no> flip object horizontally
+      VerticalFlip                    <yes|no> flip object vertically
+      Offset                          <x> <y> (offset in pixels from top left corner of joystick highlight in song title region)
 
 
   6: Skin Selection
@@ -405,8 +412,8 @@
   3. USB game controllers (joystick stick / button)
   4. Region on touch screen
   
-  For touch screen buttons, the touch areas are defined in the skin file itself, using the [touch areas] 
-  section, because these are skin-related.  If any buttons are defined in the skins' [touch areas] section 
+  For touch screen buttons, the touch areas are defined in the skin file itself, using the [touch buttons] 
+  section, because these are skin-related.  If any buttons are defined in the skins' [touch buttons] section 
   and a touch screen is detected, the user-defined mapping for that button is ignored and set to touch 
   input.
 
@@ -424,10 +431,8 @@
                   ] : RightScreen ....... Move to next screen
                   , : LeftSort .......... Move to prev sort section*
                   . : RightSort ......... Move to next sort section*
-                 UP : Up ................ Move song selection up
-                                          (joystick mode only)
-               DOWN : Down .............. Move song selection down
-                                          (joystick mode only)
+                 UP : Up ................ Move song selection up (joystick mode only)
+               DOWN : Down .............. Move song selection down (joystick mode only)
     0 to 9 / A to Z : Select0..SelectZ .. Song selection
               ENTER : Select ............ Select song
                  F1 : Coin1 ............. Insert coin
@@ -441,18 +446,15 @@
                  F9 : Flag3 ............. Toggle status flag 3
                 F10 : Flag4 ............. Toggle status flag 4
               SPACE : Random ............ Select random song
-          BACKSPACE : Skip .............. Skip (stops currently
-                  ; : Pause ............. pause (pauses/unpauses
-                                          currently playing song)
+          BACKSPACE : Skip .............. Skip (stops currently playing song)
+                  ; : Pause ............. pause (pauses/unpauses currently playing song)
                   ' : AttractMode ....... Toggle Attract Mode
                 F11 : LoopQueue ......... Toggle Loop mode
                 F12 : FreePlay .......... Toggle Free Play mode
-             DELETE : ClearQueue ........ Clear all songs in
-                                          play queue
+             DELETE : ClearQueue ........ Clear all songs in play queue
                   = : VolUp ............. Song volume up
                   - : VolDown ........... Song volume down
-          LEFT CTRL : Mute .............. Mute / Unmute song and
-                                   ...... sound effects volume
+          LEFT CTRL : Mute .............. Mute / Unmute song and sound effects
          RIGHT CTRL : Screenshot ........ Take Screenshot
       FORWARD SLASH : Search ............ Search Filter Menu
                 TAB : Menu .............. Main Menu
@@ -594,244 +596,248 @@
   with other skins.
 
       [general]
-      SkinSize                      <width> <height> Size of the skin (in pixels).
-                                    The skin is scaled to match the full screen size of the display
-      SkinName                      <name> of the skin
-      SkinVersion                   <version string> of the skin
-      SkinDescription *             <description> of the skin
-      Screenshot                    <filename> of screenshot capture
-      MusicPath *                   <filename> of path to music files (mp3, ogv, m3u, pls).  Can contain sub-directories.
+      SkinSize                        <width> <height> Size of the skin (in pixels).
+                                      The skin is scaled to match the full screen size of the display
+      SkinName                        <name> of the skin
+      SkinVersion                     <version string> of the skin
+      SkinDescription *               <description> of the skin
+      Screenshot                      <filename> of screenshot capture
+      MusicPath *                     <filename> of path to music files (mp3, ogv, m3u, pls).  Can contain sub-directories.
 
-      SortSongsBy *                 <title|artist|album|albumArtist|year|genre|trackNumber|publisher|ISRC|custom|random|unsorted> [Descend|Ascend]
-                                    optional [Descend|Ascend] is sort direction (Ascend if not specified)
-      NoDuplicates                  <yes|no> Prevent songs being added to the playqueue if they are already in the playqueue
-      DuplicatesUseCredits          <yes|no> Determines if a selected song which is already playing or in the queue (duplicate song)
-                                    uses up a credit
-      SelectButtons *               List of characters for the select code for the button presses
-      SelectButtonsSequence         <rowcol|colrow>
-                                    Specifies if the first select buttons are cycled before the second
-                                    select code buttons (colrow) or the after the second buttons (rowcol)
-      AutoSelect                    <yes|no>
-                                    No : Select button needs to be pressed to select song (after the select code is entered)
-                                    Yes : song selected immediately select code is entered
-      InstantPlay                   <yes|no>
-                                    No : selected song is queued in the coming up list
-                                    Yes : selected is immediately played (and any currently playing song is stopped)
-      ScreenJump                    <number> of screens of title strips moved in one go when 'LeftScreen' or 'RightScreen' button is pressed
-      SelectTimeout                 <time> [ticks|seconds|minutes|hours] Timeout for select code to return to '--' after not detecting all the selection digits
-      SelectHoldTimeout             <time> [ticks|seconds|minutes|hours] Timeout for select code to return to '--' after song selected
-      TitleStripAutoTurnTime        <time> [ticks|seconds|minutes|hours] Time between title_strips automatically turning (0 = no automatic title strip turn)
-      AutoGenre *                   <name> of Genre.  Pressing Auto button will cycle through all AutoGenre definitions (and 'Off'
-                                    and 'Any') and only select a random song from that Genre **
-      SongsPerTitleStrip            <number> of song entries on each song title strip
-      AlbumMode                     <yes|no>
-      TitleStripSize                <width> <height> (in pixels) of each song title strip
-      TitleStripBackground          <filename> [genre]
-                                    Filename of graphic image (bmp, png, tga, jpg, pcx) to be used as the title strip background
-                                    Optional Genre string is name of genre specific title strip background
-      PairSongs                     <yes|no|dual>
-                                    No : each song in a title strip is listed with its artist line
-                                    Yes : two songs are displayed (above and below) the artist line only if they are by the same artist
-                                    Dual : two songs are displayed (above and below) the artist line regardless of artist
-      TitleStripMoveStyle           <effect> <speed> <fading>.  See section 'TitleStrips'
-      SongDescription               <string> defining the song description for the song entry (first in a pair) in the title_strips.
-                                    Can contain a mixture of fixed text and reserved keywords
-                                    See 'TitleStrips section' for details.
+      SortSongsBy *                   <title|artist|album|albumArtist|year|genre|trackNumber|publisher|ISRC|custom|random|unsorted> [Descend|Ascend]
+                                      optional [Descend|Ascend] is sort direction (Ascend if not specified)
+      NoDuplicates                    <yes|no> Prevent songs being added to the playqueue if they are already in the playqueueNote enabling this option disables the [general] LoopPlayQueue parameter
+      DuplicatesUseCredits            <yes|no> Determines if a selected song which is already playing or in the queue (duplicate song)
+                                      uses up a credit
+      SelectButtons *                 List of characters for the select code for the button presses
+      SelectButtonsSequence           <rowcol|colrow>
+                                      colrow : SelectButton sequences are cycled in order they are defined
+                                      rowcol : SelectButton sequences are cycled in reverse order they are defined
+      AutoSelect                      <yes|no>
+                                      No : Select button needs to be pressed to select song (after the select code is entered)
+                                      Yes : song selected immediately select code is entered
+      InstantPlay                     <yes|no>
+                                      No : selected song is queued in the coming up list
+                                      Yes : selected is immediately played (and any currently playing song is stopped)
+      ScreenJump                      <number> of screens of title strips moved in one go when 'LeftScreen' or 'RightScreen' button is pressed
+      SelectTimeout                   <time> [ticks|seconds|minutes|hours] Timeout for select code to return to undefined after not detecting all the selection digits
+      SelectHoldTimeout               <time> [ticks|seconds|minutes|hours] Timeout for select code to return to undefined after song selected
+      TitleStripAutoTurnTime          <time> [ticks|seconds|minutes|hours] Time between title_strips automatically turning (0 = no automatic title strip turn)
+      AttractModeGenre *              <name> of Genre.  Pressing AttractMode button will cycle through all AttractModeGenre definitions (and 'Off'
+                                      and 'Any') and only select a random song from that Genre **
+      SongsPerTitleStrip              <number> of song entries on each song title strip
+      AlbumMode                       <yes|no>
+                                      Yes : Songs are grouped and selected by Album
+                                      No : Songs are selected individually
 
-      PairedSongDescription         <string> defining (part of) the song description for the second song in a pair
-                                    NOTE: In Albums mode (AlbumMode = Albums) this determines the Album Title line
-      ArtistDescription             <string> defining (part of) the artist description in the title_strips (same values as 'SongDescription')
-      MatchedArtistDescription      <string> used instead of 'ArtistDescription' if the artists of the songs in a pair are the same
-                                    (or the second song in a pair is absent)
-      ExtraDescription *            <string> defining (part of) the extra description in the title_strips (same values as 'SongDescription')
-                                     Note that each entry must have a corresponding "ExtraText" entry
-      SongLoadTime                  <time> [ticks|seconds|minutes|hours] the time the song takes to load (from removing from the coming up queue to starting to play)
-      SongUnloadTime                <time> [ticks|seconds|minutes|hours] the time the song takes to unload (from finishing playing to the next song in the queue loading)
-      SongText                      <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
-                                    Text style for Song title in song title strip. See section 'Fonts and Text'
-      PairedSongText                <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
-                                    Text style for the paired Song title in song title strip. See section 'Fonts and Text'
-      ArtistText                    <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
-                                    Text style for Artist name in song title strip. See section 'Fonts and Text'
-      AlbumText                     <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
-                                    Text style for Album name in song title strip. See section 'Fonts and Text'
-      ExtraText *                   <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
-                                    Text style for the extra text field(s) in song title strip. See section 'Fonts and Text'
-                                    Note that this must be defined for each definition of "ExtraDescription"
-      AlbumArtSize                  <width> <height> (in pixels)
-      AlbumArtOffset                <x> <y> Offset from top left hand corner of songs title strip (in pixels)
-      AlbumArtAngle                 <angle> of Album artwork in degrees (0..359)
-      AlbumModeLineSpacing          <gap> (in pixels) between song titles in the albums song title_strips
-      NowPlayingMissingArtwork      <filename> of graphic image (bmp, png, tga, jpg, pcx) to be used if NowPlayingArtworkMode = 'Specified',
-                                    or no song artwork is found and NowPlayingArtworkMode = 'Auto'
-      AlbumModeMissingArtwork       <filename> of graphic image (bmp, png, tga, jpg, pcx) to be used if AlbumModeArtworkMode = 'Specified',
-                                    or no song artwork is found and AlbumModeArtworkMode = 'Auto'
-      NowPlayingArtworkMode         <none|embedded|folder|specified|logo|a>
-                                    none : don't show artwork,
-                                    embedded : use image in MP3 file,
-                                    folder : use 'folder.jpg' in song directory,
-                                    specified : use MissingArtwork image,
-                                    logo : use fruitbox logo,
-                                    auto : use embedded/folder/missing/logo if available
-      AlbumModeArtworkMode          <none|folder|specified|logo|auto>
-                                    none : don't show artwork,
-                                    folder : use 'folder.jpg' in song directory,
-                                    specified : use MissingArtwork image,
-                                    logo : use fruitbox logo,
-                                    auto : use folder/missing/logo if available
+      TitleStripSize                  <width> <height> (in pixels) of each song title strip
+      TitleStripBackground            <filename> [genre]
+                                      Filename of graphic image (bmp, png, tga, jpg, pcx) to be used as the title strip background
+                                      Optional Genre string is name of genre specific title strip background
+      PairSongs                       <yes|no|dual>
+                                      No : each song in a title strip is listed with its artist line
+                                      Yes : two songs are displayed (above and below) the artist line only if they are by the same artist
+                                      Dual : two songs are displayed (above and below) the artist line regardless of artist
+      TitleStripMoveStyle             <effect> <speed> <fading>.  See section 'TitleStrips'
+      SongDescription                 <string> defining the song description for the song entry (first in a pair) in the title_strips.
+                                      Can contain a mixture of fixed text and reserved keywords
+                                      See 'TitleStrips section' for details.
+      PairedSongDescription           <string> defining the song description for the second song in a pair
+                                      NOTE: In Albums mode ([general] AlbumMode = yes) this determines the Album Title line
+      ArtistDescription               <string> defining the artist description in the title_strips (same values as 'SongDescription')
+      MatchedArtistDescription        <string> used instead of 'ArtistDescription' if the artists of the songs in a pair are the same
+                                      (or the second song in a pair is absent)
+      ExtraDescription *              <string> defining the extra description in the title_strips (same values as 'SongDescription')
+                                      Note that each entry must have a corresponding "ExtraText" entry
+      SongLoadTime                    <time> [ticks|seconds|minutes|hours] the time the song takes to load (from removing from the coming up queue to starting to play)
+      SongUnloadTime                  <time> [ticks|seconds|minutes|hours] the time the song takes to unload (from finishing playing to the next song in the queue loading)
+      SongText                        <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
+                                      Text style for Song title in song title strip. See section 'Fonts and Text'
+      PairedSongText                  <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
+                                      Text style for the paired Song title in song title strip. See section 'Fonts and Text'
+      ArtistText                      <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
+                                      Text style for Artist name in song title strip. See section 'Fonts and Text'
+      AlbumText                       <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
+                                      Text style for Album name in song title strip. See section 'Fonts and Text'
+      ExtraText *                     <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
+                                      Text style for the extra text field(s) in song title strip. See section 'Fonts and Text'
+                                      Note that this must be defined for each definition of "ExtraDescription"
+      AlbumArtSize                    <width> <height> (in pixels)
+      AlbumArtOffset                  <x> <y> Offset from top left hand corner of songs title strip (in pixels)
+      AlbumArtAngle                   <angle> of Album artwork in degrees (0..359)
+      AlbumModeLineSpacing            <gap> (in pixels) between song titles in the albums song title_strips
+      NowPlayingMissingArtwork        <filename> of graphic image (bmp, png, tga, jpg, pcx) to be used if NowPlayingArtworkMode = 'Specified',
+                                      or no song artwork is found and NowPlayingArtworkMode = 'Auto'
+      AlbumModeMissingArtwork         <filename> of graphic image (bmp, png, tga, jpg, pcx) to be used if AlbumModeArtworkMode = 'Specified',
+                                      or no song artwork is found and AlbumModeArtworkMode = 'Auto'
+      NowPlayingArtworkMode           <none|embedded|folder|specified|logo|a>
+                                      none : don't show artwork,
+                                      embedded : use image in MP3 file,
+                                      folder : use 'folder.jpg' in song directory,
+                                      specified : use MissingArtwork image,
+                                      logo : use fruitbox logo,
+                                      auto : use embedded/folder/missing/logo if available
+      AlbumModeArtworkMode            <none|folder|specified|logo|auto>
+                                      none : don't show artwork,
+                                      folder : use 'folder.jpg' in song directory,
+                                      specified : use MissingArtwork image,
+                                      logo : use fruitbox logo,
+                                      auto : use folder/missing/logo if available
 
       [fonts]
-      File *                        <filename> <height> font to add to the font pool (ttf, opentype, type1, CID, CFF, fon, fnt, x11, pcf)
+      File *                          <filename> <height> font to add to the font pool (ttf, opentype, type1, CID, CFF, fon, fnt, x11, pcf)
 
       [title strip] * 
-      Visible                       <yes|no> (makes the object visible or invisible)
-      Position                      <x> <y> (in pixels)
-      Clip                          <x> <y> <width> <height> (in pixels)
-      Angle                         <angle> of object in degrees (0..359)
-      MoveDelay                     <delay> (in video frame ticks) between left/right button press and title strip moving
-      MoveReverse                   <yes|no> reverse the direction of the title strip movement
-      HorizontalFlip                <yes|no> flip object horizontally
-      VerticalFlip                  <yes|no> flip object vertically
-      Tint                          <r> <g> <b> <a> (modify the objects colour)
+      Visible                         <yes|no> (makes the object visible or invisible)
+      Position                        <x> <y> (in pixels)
+      Clip                            <x> <y> <width> <height> (in pixels)
+      Angle                           <angle> of object in degrees (0..359)
+      MoveDelay                       <delay> (in video frame ticks) between left/right button press and title strip moving
+      MoveReverse                     <yes|no> reverse the direction of the title strip movement
+      HorizontalFlip                  <yes|no> flip object horizontally
+      VerticalFlip                    <yes|no> flip object vertically
+      Tint                            <r> <g> <b> <a> (modify the objects colour)
 
       [status] * 
-      Visible                       <yes|no> (makes the object visible or invisible)
-      Size                          <width> [dynamic] <height> [dynamic] (in pixels)
-      Position                      <x> [dynamic] <y> [dynamic] (in pixels)
-      Clip                          <x> [dynamic] <y> [dynamic] <width> [dynamic] <height> [dynamic] (in pixels)
-      Angle                         <angle> [dynamic] of object in degrees (0..359)
-      Tint                          <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
-      DynamicEnableFlag             <1..4> enable dynamic parameters using status flag 1..4
-      HorizontalFlip                <yes|no> flip object horizontally
-      VerticalFlip                  <yes|no> flip object vertically
-      Contents                      <filename> of text file describing status box contents
-      Output                        <filename> of output text file containing status
-      Text                          <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
-      LineSpacing                   <gap> (in pixels) between text lines in the status box
-      LoopVideo                     <yes|no> start video from beginning after it finishes
-      TimerTickPeriod               <time> (in video frame ticks) of status box timer period
-      TimerOneShot                  <yes|no>
-                                    Yes : timer stops after one tick
-                                    No : timer runs indefinitely (default)
-      TimerEnable                   <yes|no>
-                                    Yes : timer initially enabled (default)
-                                    No : timer initially disabled)
-      BitmapDirectory               <location> of image files (bmp, jpg, png)
-      Bitmap *                      <filename> of graphic image (bmp, png, tga, jpg, pcx)
-      Video                         <filename> of video clip (ogv)
-      Sound                         <filename> of sound effect (wav, flac, ogg) <volume (0..100)> [loop (Yes|No)]
+      Visible                         <yes|no> (makes the object visible or invisible)
+      Size                            <width> [dynamic] <height> [dynamic] (in pixels)
+      Position                        <x> [dynamic] <y> [dynamic] (in pixels)
+      Clip                            <x> [dynamic] <y> [dynamic] <width> [dynamic] <height> [dynamic] (in pixels)
+      Angle                           <angle> [dynamic] of object in degrees (0..359)
+      Tint                            <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
+      DynamicEnableFlag               <1..4> enable dynamic parameters using status flag 1..4
+      HorizontalFlip                  <yes|no> flip object horizontally
+      VerticalFlip                    <yes|no> flip object vertically
+      Contents                        <filename> of text file describing status box contents
+      Output                          <filename> of output text file containing status
+      Text                            <font> <colour (r g b a)> <alignment> <capitalise> <mode> <quoted> <offset (x y)> <max_width>
+      LineSpacing                     <gap> (in pixels) between text lines in the status box
+      LoopVideo                       <yes|no> start video from beginning after it finishes
+      TimerTickPeriod                 <time> (in video frame ticks) of status box timer period
+      TimerOneShot                    <yes|no>
+                                      Yes : timer stops after one tick
+                                      No : timer runs indefinitely (default)
+      TimerEnable                     <yes|no>
+                                      Yes : timer initially enabled (default)
+                                      No : timer initially disabled)
+      BitmapDirectory                 <location> of image files (bmp, jpg, png)
+      Bitmap *                        <filename> of graphic image (bmp, png, tga, jpg, pcx)
+      Video                           <filename> of video clip (ogv)
+      Sound                           <filename> of sound effect (wav, flac, ogg) <volume (0..100)> [loop (Yes|No)]
 
       [bitmap] * 
-      Visible                       <yes|no> (makes the object visible or invisible)
-      Size                          <width> [dynamic] <height> [dynamic] (in pixels)
-      Position                      <x> [dynamic] <y> [dynamic] (in pixels)
-      Clip                          <x> [dynamic] <y> [dynamic] <width> [dynamic] <height> [dynamic] (in pixels)
-      Angle                         <angle> [dynamic] of object in degrees (0..359)
-      Tint                          <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
-      DynamicEnableFlag             <1..4> enable dynamic parameters using status flag 1..4
-      HorizontalFlip                <yes|no> flip object horizontally
-      VerticalFlip                  <yes|no> flip object vertically
-      File                          <filename> of graphic image (bmp, png, tga, jpg, pcx)
+      Visible                         <yes|no> (makes the object visible or invisible)
+      Size                            <width> [dynamic] <height> [dynamic] (in pixels)
+      Position                        <x> [dynamic] <y> [dynamic] (in pixels)
+      Clip                            <x> [dynamic] <y> [dynamic] <width> [dynamic] <height> [dynamic] (in pixels)
+      Angle                           <angle> [dynamic] of object in degrees (0..359)
+      Tint                            <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
+      DynamicEnableFlag               <1..4> enable dynamic parameters using status flag 1..4
+      HorizontalFlip                  <yes|no> flip object horizontally
+      VerticalFlip                    <yes|no> flip object vertically
+      File                            <filename> of graphic image (bmp, png, tga, jpg, pcx)
 
       [spectrum] * 
-      Visible                       <yes|no> (makes the object visible or invisible)
-      Size                          <width> [dynamic] <height> [dynamic] (in pixels)
-      Position                      <x> [dynamic] <y> [dynamic] (in pixels)
-      Clip                          <x> [dynamic] <y> [dynamic] <width> [dynamic] <height> [dynamic] (in pixels)
-      Angle                         <angle> [dynamic] of object in degrees (0..359)
-      Tint                          <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
-      DynamicEnableFlag             <1..4> enable dynamic parameters using status flag 1..4
-      HorizontalFlip                <yes|no> flip object horizontally
-      VerticalFlip                  <yes|no> flip object vertically
-      Bitmap                        <filename> of band(s) graphic image (bmp, png, tga, jpg, pcx)
-      Band *                        <number (0..31)> [gain (1.0 nominal)] [offset (x y)] of visible frequency band
-      Mode                          <scaled|clipped|position> bitmap draw mode
-      Channel                       <left|right|both>
-      Decay                         <value> speed of peak decay (0=instant)
+      Visible                         <yes|no> (makes the object visible or invisible)
+      Size                            <width> [dynamic] <height> [dynamic] (in pixels)
+      Position                        <x> [dynamic] <y> [dynamic] (in pixels)
+      Clip                            <x> [dynamic] <y> [dynamic] <width> [dynamic] <height> [dynamic] (in pixels)
+      Angle                           <angle> [dynamic] of object in degrees (0..359)
+      Tint                            <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
+      DynamicEnableFlag               <1..4> enable dynamic parameters using status flag 1..4
+      HorizontalFlip                  <yes|no> flip object horizontally
+      VerticalFlip                    <yes|no> flip object vertically
+      Bitmap                          <filename> of band(s) graphic image (bmp, png, tga, jpg, pcx)
+      Band *                          <number (0..31)> [gain (1.0 nominal)] [offset (x y)] of visible frequency band
+      Mode                            <scaled|clipped|position> bitmap draw mode
+      Channel                         <left|right|both>
+      Decay                           <value> speed of peak decay (0=instant)
 
-      [touch areas]
-      TitleStrips                   <filename> of graphic image (bmp, png, tga, jpg, pcx).
-                                    Specifying this enables song selection by touching song name
-      Offset                        <x> <y> (offset in pixels from top left corner of song touch highlight in song title region)
-      Size                          <width> <height> (in pixels).  If not specified the size will be set to cover the song title exactly
-      Angle                         <angle> [dynamic] of object in degrees (0..359)
-      HorizontalFlip                <yes|no> flip object horizontally
-      VerticalFlip                  <yes|no> flip object vertically
-      Tint                          <r> [dynamic] <g> [dynamic] <b> [dynamic] <a> [dynamic] (modify the objects colour)
-      Quit                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Coin1                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Coin2                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Coin3                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Coin4                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Coin5                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Coin6                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      VolUp                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      VolDown                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Random                        <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Select                        <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Skip                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Pause                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Up                            <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Down                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Left                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Right                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      LeftScreen                    <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      RightScreen                   <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      LeftSort                      <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      RightSort                     <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      AttractMode                   <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      LoopQueue                     <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      FreePlay                      <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      ClearQueue                    <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Mute                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      PowerOff                      <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Select0                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Select1                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Select2                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Select3                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Select4                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Select5                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Select6                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Select7                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Select8                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Select9                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectA                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectB                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectC                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectD                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectE                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectF                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectG                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectH                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectI                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectJ                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectK                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectL                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectM                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectN                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectO                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectP                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectQ                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectR                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectS                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectT                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectU                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectV                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectW                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectX                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectY                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      SelectZ                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Flag1                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Flag2                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Flag3                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Flag4                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Menu                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Search                        <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Mouse                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
-      Screenshot                    <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      [touch song]
+      Bitmap                          <filename> of graphic image (bmp, png, tga, jpg, pcx).
+                                      Image to overlay on title strip song name when touched                                      Note: Defining this parameter will enable touch song mode
+      Offset                          <x> <y> (offset in pixels from top left corner of song touch highlight in song title region)
+      Size                            <width> <height> (in pixels).  If not specified the size will be set to cover the song title exactly
+      Angle                           <angle> of object in degrees (0..359)
+      HorizontalFlip                  <yes|no> flip object horizontally
+      VerticalFlip                    <yes|no> flip object vertically
+      Tint                            <r> <g> <b> <a> (modify the objects colour)
+
+      [touch buttons]
+      Quit                            <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Coin1                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Coin2                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Coin3                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Coin4                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Coin5                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Coin6                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      VolUp                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      VolDown                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Random                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Skip                            <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Pause                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Up                              <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Down                            <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Left                            <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Right                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      LeftScreen                      <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      RightScreen                     <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      LeftSort                        <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      RightSort                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      AttractMode                     <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      LoopQueue                       <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      FreePlay                        <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      ClearQueue                      <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Mute                            <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      PowerOff                        <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select0                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select1                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select2                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select3                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select4                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select5                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select6                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select7                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select8                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Select9                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectA                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectB                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectC                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectD                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectE                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectF                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectG                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectH                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectI                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectJ                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectK                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectL                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectM                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectN                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectO                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectP                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectQ                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectR                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectS                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectT                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectU                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectV                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectW                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectX                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectY                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      SelectZ                         <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Flag1                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Flag2                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Flag3                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Flag4                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Menu                            <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Search                          <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Mouse                           <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
+      Screenshot                      <x> <y> <width> <height> [bitmap] (touch area of button, optional bitmap to draw when touched)
 
 
-  ** Recognised AutoGenre values are...
+  ** Recognised AttractModeGenre values are...
 
   Blues                         Classic Rock                  Country                       Dance                         
   Disco                         Funk                          Grunge                        Hip-Hop                       
@@ -883,10 +889,10 @@
   G-Funk                        Dubstep                       Garage Rock                   Psybient                      
   Off                           Any                           Unknown                       
 
-  Note that you can also define your own Genres and fruitbox will recognise these if the 'AutoGenre' 
+  Note that you can also define your own Genres and fruitbox will recognise these if the 'AttractModeGenre' 
   field matches the name in the MP3 (ID3v2) genre tag.
 
-  fruitbox will make every effort to choose a song from the specified AutoGenre, but is constrained
+  fruitbox will make every effort to choose a song from the specified AttractModeGenre, but is constrained
   by the song history and number of songs available to choose from.  If it cannot choose a song
   in a reasonable time, it will play any song.
 
@@ -908,6 +914,7 @@
       ${LAST_VISIBLE_TITLE_STRIP}
       ${NOW_PLAYING_ELAPSED_TIME}
       ${SONG_LOAD_POSITION}
+      ${PLAYQUEUE_OCCUPANCY}
       ${SPECTRUM_BAND}
       ${LEFT_SPECTRUM_BAND}
       ${RIGHT_SPECTRUM_BAND}
@@ -1030,23 +1037,23 @@
 
   12.8: Touch Song Mode / Button Touch Areas
 
-    If a [touch areas] "TitleStrips = <image file>" object parameter is specified in the skin file, then 
-    touch song mode is activated (only if a touch screen has been detected).  This option over-rides joystick 
-    mode if that has also been defined (using the [joystick] object).
+    Touch Song mode is activated by defining the [touch song] Bitmap parameter, and if a touchsreen has been 
+    detected.  This option over-rides joystick mode if that has also been defined (using the [joystick] object).
     
     In touch song mode, the user can touch the song title areas themselves to select a song, rather than 
     using select buttons.  Note that the song touch areas default to the title strip area holding the song 
-    name, but their size and position can be adjusted by using the 'Size' and 'Offset' [touch song] parameters. 
-    The <image file> defines an image file which is displayed over the song area when being touched.
+    name, but their size and position can be adjusted by using the [touch song] 'Size' and 'Offset' parameters. 
+    As well as enabling touch song mode, the [touch song] Bitmap parameter specifies an image file which 
+    is displayed over the song area when being touched.
     
-    If any button assignments are specified in the [touch areas] section, then (and a touchscreen has been 
+    If any button assignments are specified in the [touch buttons] section, then (if a touchscreen has been 
     detected) that area will trigger the corresponding button press event if touched.  Furthermore, if the 
     optional image file parameter is specified, then that image will be drawn whilst that area of the display 
     is touched, allowing simple button press animation effects.
     
-    Note : if a button area has been defined in the [touch areas] section, and a touch screen has been detected, 
-    then that button will be automatically configured as a touch input, over-riding any mapping in the fruitbox 
-    ini file.
+    Note : if a button area has been defined in the [touch buttons] section, and a touch screen has been 
+    detected, then that button will be automatically configured as a touch input, over-riding any mapping 
+    in the fruitbox ini file.
 
 
   12.9: Mouse Mode
@@ -1117,18 +1124,18 @@
 
   The display is built using a combination of the following objects, as defined in the skin file:
   
-  1. [title strip] object : a region which contains songs.
-                           See title strips section for more details.
-  2.      [bitmap] object : a region which contains a static bitmap.
-                           This can be used for background and
-                           foregrounds for example.
-  3.      [status] object : a region containing status information.
-                           See status box section for more details.
-  4.    [spectrum] object : a region containing an audio spectrum analyser.
-                           See spectrum section for more details.
-  5.  [touch song] object : a region containing a bitmap highlighting
-                           a song name when touched.
-                           See touch song section for more details.
+  1. [title strip] object       : a region which contains songs
+                                 See title strips section for more details
+  2.      [bitmap] object       : a region which contains a static bitmap
+                                 This can be used for background and foregrounds for example
+  3.      [status] object       : a region containing status information
+                                 See status box section for more details
+  4.    [spectrum] object       : a region containing an audio spectrum analyser
+                                 See spectrum section for more details
+  5.  [touch song] object       : a region containing a bitmap highlighting a song name when touched.
+                                 See touch song section for more details.
+  5.  [touch buttons] object(s) : region(s) containing a bitmap displayed when a touch button is pressed.
+                                 See touch button section for more details.
   
   Note that there is no limit on the number of objects which can be defined.  They are rendered to the 
   display in the order that they are defined in the skin file.
@@ -1357,8 +1364,11 @@
       ${CREDITS}
       The number of credits
 
-      ${AUTO_GENRE}
-      The name of the current AutoGenre that Attract mode will select a random song from
+      ${SONGS_CREDITED}
+      The number of songs available from inserted credits
+
+      ${ATTRACT_MODE_GENRE}
+      The name of the current AttractModeGenre that Attract mode will select a random song from
 
       ${CREDITS_PER_COIN1}
       The number of credits added when a coin is inserted
@@ -1397,7 +1407,7 @@
       The number of empty spaces in the playqueue
 
       ${NUM_TITLE_STRIPS}
-      The total number of title_strips in the jukebox
+      The total number of title strips in the jukebox
 
       ${FIRST_VISIBLE_TITLE_STRIP}
       The number of the first title strip visible on the display
@@ -1724,10 +1734,10 @@
       queue
 
       ${IF_ATTRACT_MODE}
-      Activates the text following it if Auto Play mode is enabled
+      Activates the text following it if Attract mode is enabled
 
       ${IF_NOT_ATTRACT_MODE}
-      Activates the text following it if Auto Play mode is disabled
+      Activates the text following it if Attract mode is disabled
 
       ${IF_LOOPQUEUE_MODE}
       Activates the text following it if Loop mode is enabled
@@ -2250,10 +2260,10 @@
       ${IF_NOT_BUTTON_FLAG4_PRESSED}
       Activates the text following it if the specified button is not pressed
 
-    The variables beginning ${IF_*}, ${IF_NOT_*} and ${ELSE} are used to conditionally execute or ignore 
+    The variables beginning ${IF_*}, ${IF_NOT_*} and ${ELSE} are used to conditionally display or ignore 
     the text in the config file which follows it, upto the next ${END_IF} (or end of the line).  Note that 
-    IF conditions cannot span lines in the text file (unless the line ends with the '' line concatentation 
-    character).  Variables which do not begin with $IF specify dedicated jukebox status such as song names, 
+    IF conditions cannot span lines in the text file (unless the line ends with the '\' line concatentation 
+    character).  Variables which do not begin with ${IF specify dedicated jukebox status such as song names, 
     etc.
     
     Each line in the Contents file corresponds to a unique line in the status output, and are therefore treated 
