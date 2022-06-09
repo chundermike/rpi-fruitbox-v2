@@ -1,6 +1,13 @@
 fruitbox Release Notes:
 
 -----------------------------------
+version 2.01
+-----------------------------------
+
+Bug fix : correctly set parameter value to zero ticks and not default value incorrectly in ticks if parameter value field empty
+Bug fix : Correctly ghost out touchscreen, mouse and calibrate touch items if touchscreen and mouse not detected
+
+-----------------------------------
 version 2.00
 -----------------------------------
 
@@ -110,6 +117,8 @@ The following have been moved from the skin file to the fruitbox.ini file...
 -> Changed --cfg command line argument to --skin
 
 -> Changed --no-database-update command line argument to --no-database-refresh
+
+-> Added --force-database-refresh command line argument to update database regardless of changes
 
 -> Added --rotate <angle> command line option to rotate display through <angle> degrees
 
