@@ -30,7 +30,6 @@ Steps 3 to 8 below are for all Raspberry Pi versions ...
 3. From a command shell, type : wget https://github.com/chundermike/rpi-fruitbox-v2/raw/main/install_fruitbox
 4. From a command shell, type : chmod +x ./install_fruitbox
 5. From a command shell, type : ./install_fruitbox
-   This will install fruitbox in the /home/pi/fruitbox directory
 6. Copy your music MP3 files (either to the SD card or USB memory stick)
    (by default fruitbox looks for music files in the /home/pi/Music directory on the SD card)
 7. Point fruitbox to your MP3 files (edit /home/pi/fruitbox/fruitbox.ini and change the MusicPath parameter)
