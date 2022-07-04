@@ -1,6 +1,18 @@
 fruitbox Release Notes:
 
 -----------------------------------
+version 2.02
+-----------------------------------
+
+Bug fix : Software Update now works in Settings Menu
+Bug fix : Correctly restore user defined buttons mappings for left and right after skin chooser invoked
+Bug fix : Correctly distinguish buttons on identical input devices (to be verified)
+Bug fix : GPIO Configured buttons reconfigured correctly to any other type 
+Bug fix : Volume control now also controls sound effects volume
+
+Pi4 version (for Desktop OS)
+
+-----------------------------------
 version 2.01
 -----------------------------------
 
