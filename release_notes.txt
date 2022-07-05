@@ -1,6 +1,12 @@
 fruitbox Release Notes:
 
 -----------------------------------
+version 2.03
+-----------------------------------
+
+Bug fix : fixed broken generic keyboard input driver
+
+-----------------------------------
 version 2.02
 -----------------------------------
 
