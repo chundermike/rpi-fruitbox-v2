@@ -13,6 +13,9 @@ For Raspberry Pi version 4 (recommended) :
    https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2022-04-07/2022-04-04-raspios-bullseye-arm64.img.xz
 
 2. Increase GPU memory to (at least) 256 ( -> Performance Options -> GPU Memory)
+3. From a command shell, type : wget https://github.com/chundermike/rpi-fruitbox-v2/raw/main/install_fruitbox_pi4
+4. From a command shell, type : chmod +x ./install_fruitbox_pi4
+5. From a command shell, type : ./install_fruitbox_pi4
 
     
 For Raspberry Pi versions Zero through 3 :
@@ -23,13 +26,13 @@ For Raspberry Pi versions Zero through 3 :
 
 2. Increase GPU memory to (at least) 256 (sudo raspi-config -> Performance Options -> GPU Memory)
    Note raspi-config can also be used to set up Wi-Fi and enable SSH for transferring files from PC to Pi via WinSCP for example
-
-
-Steps 3 to 8 below are for all Raspberry Pi versions ...
-
 3. From a command shell, type : wget https://github.com/chundermike/rpi-fruitbox-v2/raw/main/install_fruitbox
 4. From a command shell, type : chmod +x ./install_fruitbox
 5. From a command shell, type : ./install_fruitbox
+
+
+Steps 6 to 8 below are for all Raspberry Pi versions ...
+
 6. Copy your music MP3 files (either to the SD card or USB memory stick)
    (by default fruitbox looks for music files in the /home/pi/Music directory on the SD card)
 7. Point fruitbox to your MP3 files (edit /home/pi/fruitbox/fruitbox.ini and change the MusicPath parameter)
