@@ -67,48 +67,48 @@
     Show basic help and version information.
 
 
-  4.2: --version                   
+  4.2: --version                       
 
     Reports the version number.
 
 
-  4.3: --skin <filename>           
+  4.3: --skin <filename>               
 
     This option determines which skin (configuration file) is used.  If omitted, then fruitbox will use the 
     [skins] section in the ini file to determine which skin to use.  If more than one skin is defined in 
     the [skins] section, then fruitbox will allow the user to choose a skin from an on-screen menu.
 
 
-  4.4: --ini <filename>            
+  4.4: --ini <filename>                
 
     Name of initialisation file (defaults to 'fruitbox.ini' if not specified). This file contains all the 
     non-skin specific fruitbox parameters.
 
 
-  4.5: --music-path <filepath>     
+  4.5: --music-path <filepath>         
 
     Use the specified music path instead of the one specified in the skin or ini files.  Note that the --music-path 
     option can be specified multiple times if the user wishes to construct the database from multiple sources.
 
 
-  4.6: --user-guide                
+  4.6: --user-guide                    
 
     Create this user-guide to file "userguide.txt".
 
 
-  4.7: --debug-song-nums           
+  4.7: --debug-song-nums               
 
     Show select code alongside song entries.
 
 
-  4.8: --no-database-refresh       
+  4.8: --no-database-refresh           
 
     Normally fruitbox will refresh the database if any database files (fruitbox.db) have a modification time 
     earler than the contents of the directories they are in.  This option disables this check, so it is up 
     to the user to delete the database file(s) in order for them to be refreshed.
 
 
-  4.9: --force-database-refresh    
+  4.9: --force-database-refresh        
 
     Normally fruitbox will refresh the database if any database files (fruitbox.db) have a modification time 
     earler than the contents of the directories they are in.  This option overrides this check, and always 
@@ -116,13 +116,13 @@
     or used when the database is created (i.e. CustomMP3Tag).
 
 
-  4.10: --load-playlist <filename>  
+  4.10: --load-playlist <filename>      
 
     Loads a playlist file and populates the play queue with the songs in it; fruitbox will begin playing 
     the songs after it has started up.
 
 
-  4.11: --save-playlist <filename>  
+  4.11: --save-playlist <filename>      
 
     When fruitbox exits (by the user pressing the 'Quit' button), this option saves the contents of the play 
     queue (and currently playing song) to the specified file.  This can subsequently be loaded back into 
@@ -130,7 +130,7 @@
     filenames which can easily be edited by hand to modify the playlist as required.
 
 
-  4.12: --dump-title-strips         
+  4.12: --dump-title-strips             
 
     This option causes every title strip to be written to a unique png image file. fruitbox will then quit 
     without running.  If fruitbox is used in a real jukebox which has real (paper) title strips and not on-screen 
@@ -143,7 +143,14 @@
     since the title strips are defined in the skin.
 
 
-  4.13: --no-scale                  
+  4.13: --display-size <width> <height> 
+
+    This option specifies the size of the display that fruitbox creates when starting up.  If not specified, 
+    then the display size is auto-detected.  The display size does not have to be the same as the skin size, 
+    as fruitbox will scale the skin size to match the display size.
+
+
+  4.14: --no-scale                      
 
     Normally fruitbox will scale (resize) the skin to the display, so no matter what its size, it will always 
     fit exactly.  This option turns off the scaling so the skin will be shown at its original size (useful 
@@ -152,7 +159,7 @@
     the outer edges of the skin will not be visible.
 
 
-  4.14: --rotate <angle>            
+  4.15: --rotate <angle>                
 
     This option allows the display to be rotated by <angle> degrees.  Please note that if using a touch based 
     skin, this will affect operation of the touch co-ordinates and the skin may have to be modified.
@@ -177,7 +184,8 @@
                                       Note: this is only used during database file *creation*
       MaxPlayQueueLength              <number> Maximum number of songs which can be stored in the coming up queue
       LoopPlayQueue                   <yes|no>
-                                      Yes : a song is added to the back of the play queue when it has finished playing (credits permitting)                                      Note this option is ignored if the [general] NoDuplicates parameter is enabled in the skin configuration file
+                                      Yes : a song is added to the back of the play queue when it has finished playing (credits permitting)
+                                      Note this option is ignored if the [general] NoDuplicates parameter is enabled in the skin configuration file
       IgnoreArtistPrefixThe           <yes|no>
                                       Yes : ignore 'The ' beginning word in artist names
       SongHistoryDepth                <number> Determines the search range of number of previously played songs to ensure
@@ -199,6 +207,8 @@
       CreditsPerSong                  <number> of song credits required to play one song
       MenuColour                      <r> <g> <b> Modify the on-screen menu colour
       MenuBackgroundColour            <r> <g> <b> <a> Modify the on-screen menu background colour
+      SkinChooserTimeout              <time> [ticks|seconds|minutes|hours] time before skin chooser starts current skin if no choice made
+                                      A value of zero or not defined disables timeout
 
       [attract mode]
       Enable                          <yes|no>
@@ -606,7 +616,8 @@
 
       SortSongsBy *                   <title|artist|album|albumArtist|year|genre|trackNumber|publisher|ISRC|custom|random|unsorted> [Descend|Ascend]
                                       optional [Descend|Ascend] is sort direction (Ascend if not specified)
-      NoDuplicates                    <yes|no> Prevent songs being added to the playqueue if they are already in the playqueueNote enabling this option disables the [general] LoopPlayQueue parameter
+      NoDuplicates                    <yes|no> Prevent songs being added to the playqueue if they are already in the playqueue
+                                      Note enabling this option disables the [general] LoopPlayQueue parameter
       DuplicatesUseCredits            <yes|no> Determines if a selected song which is already playing or in the queue (duplicate song)
                                       uses up a credit
       SelectButtons *                 List of characters for the select code for the button presses
@@ -748,14 +759,16 @@
       HorizontalFlip                  <yes|no> flip object horizontally
       VerticalFlip                    <yes|no> flip object vertically
       Bitmap                          <filename> of band(s) graphic image (bmp, png, tga, jpg, pcx)
-      Band *                          <number (0..31)> [gain (1.0 nominal)] [offset (x y)] of visible frequency band
+      Band *                          <number (0..31)> [gain (1.0 nominal)] [offset (x y)] [tint (r g b a)] of visible frequency band
+                                      Note: the tint is applied in addition to the global [spectrum] Tint
       Mode                            <scaled|clipped|position> bitmap draw mode
       Channel                         <left|right|both>
       Decay                           <value> speed of peak decay (0=instant)
 
       [touch song]
       Bitmap                          <filename> of graphic image (bmp, png, tga, jpg, pcx).
-                                      Image to overlay on title strip song name when touched                                      Note: Defining this parameter will enable touch song mode
+                                      Image to overlay on title strip song name when touched
+                                      Note: Defining this parameter will enable touch song mode
       Offset                          <x> <y> (offset in pixels from top left corner of song touch highlight in song title region)
       Size                            <width> <height> (in pixels).  If not specified the size will be set to cover the song title exactly
       Angle                           <angle> of object in degrees (0..359)
@@ -964,8 +977,7 @@
     Animated GIF files can be supported by splitting the GIF file into individual files (by using 'ffmpeg 
     -i file.gif file%02d.jpg' for example), including them in a [status] section with multiple 'Bitmap' entries, 
     and specifying the animation speed with 'TimerTickPeriod'.  Then in your status Contents text file include 
-    the text
-    '${IF_TIMER_TICK}${DRAW_BITMAP}'.
+    the text '${IF_TIMER_TICK}${DRAW_BITMAP}'.
 
 
   12.4: Status Videos
@@ -1011,7 +1023,7 @@
                      to fit within max_width
                  1..n : Scroll ... text is scrolled at the specified
                     speed (1 = slowest) if it doesn't fit into
-                    max_width
+                    max_width (See Note below)
         quoted : 'Yes' (text is wrapped within double-quotes),
                  'No' text is unmodified
         offset : x y (text position is shifted by these amounts
@@ -1020,6 +1032,8 @@
                  wider than this, then it will be shrunk to the
                  maximum width (if the 'mode' option is -1), or
                  scrolled within this width (if mode > 0)
+    
+    Note : scrolling text is only supported for status object text (not title strip text)
     
 
 
@@ -1038,7 +1052,8 @@
   12.8: Touch Song Mode / Button Touch Areas
 
     Touch Song mode is activated by defining the [touch song] Bitmap parameter, and if a touchsreen has been 
-    detected.  This option over-rides joystick mode if that has also been defined (using the [joystick] object).
+    detected (or a mouse has been detected and enabled).  This option over-rides joystick mode if that has 
+    also been defined (using the [joystick] object).
     
     In touch song mode, the user can touch the song title areas themselves to select a song, rather than 
     using select buttons.  Note that the song touch areas default to the title strip area holding the song 
