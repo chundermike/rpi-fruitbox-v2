@@ -1,29 +1,41 @@
 fruitbox Release Notes:
 
 -----------------------------------
+version 2.04
+-----------------------------------
+
+-> Added command line option --display-size to specify size of display
+-> Added timeout to skin chooser (ini file SkinChooserTimeout parameter)
+-> Fixed button character echo to terminal (credit : ehuonder)
+-> Added optional tint (r g b a) to individual spectrum analyser bands
+-> Bug fix : Memory leak causing slowdown after several hours of operation
+-> Bug fix : virtual keyboard corrupt buttons
+-> Bug fix : rejection of fake mp3 files (Apple dot_underscore files)
+-> Bug fix : controls now returned to correct mappings after touchscreen virtual keyboard invoked
+
+-----------------------------------
 version 2.03
 -----------------------------------
 
-Bug fix : fixed broken generic keyboard input driver
+-> Bug fix : fixed broken generic keyboard input driver
 
 -----------------------------------
 version 2.02
 -----------------------------------
 
-Bug fix : Software Update now works in Settings Menu
-Bug fix : Correctly restore user defined buttons mappings for left and right after skin chooser invoked
-Bug fix : Correctly distinguish buttons on identical input devices (to be verified)
-Bug fix : GPIO Configured buttons reconfigured correctly to any other type 
-Bug fix : Volume control now also controls sound effects volume
-
-Pi4 version (for Desktop OS)
+-> Bug fix : Software Update now works in Settings Menu
+-> Bug fix : Correctly restore user defined buttons mappings for left and right after skin chooser invoked
+-> Bug fix : Correctly distinguish buttons on identical input devices (to be verified)
+-> Bug fix : GPIO Configured buttons reconfigured correctly to any other type 
+-> Bug fix : Volume control now also controls sound effects volume
+-> Pi4 version (for Desktop OS)
 
 -----------------------------------
 version 2.01
 -----------------------------------
 
-Bug fix : correctly set parameter value to zero ticks and not default value incorrectly in ticks if parameter value field empty
-Bug fix : Correctly ghost out touchscreen, mouse and calibrate touch items if touchscreen and mouse not detected
+-> Bug fix : correctly set parameter value to zero ticks and not default value incorrectly in ticks if parameter value field empty
+-> Bug fix : Correctly ghost out touchscreen, mouse and calibrate touch items if touchscreen and mouse not detected
 
 -----------------------------------
 version 2.00
