@@ -9,16 +9,23 @@ Installation is as follows:
 
 For Raspberry Pi version 4 (recommended) :
 
-1. fruitbox only runs under the Raspberry Pi OS Desktop version (not Lite). The 64-bit Raspberry Pi OS image is recommended ...
-   https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2022-04-07/2022-04-04-raspios-bullseye-arm64.img.xz
-
+1. fruitbox only runs under the Raspberry Pi OS Desktop version (not Lite).  Both 32-bit and 64-bit versions of fruitbox are avaialble.
 2. Increase GPU memory to (at least) 256 ( -> Performance Options -> GPU Memory)
+    
+   For 64-bit desktop...
+
 3. From a command shell, type : wget https://github.com/chundermike/rpi-fruitbox-v2/raw/main/install_fruitbox_pi4
 4. From a command shell, type : chmod +x ./install_fruitbox_pi4
 5. From a command shell, type : ./install_fruitbox_pi4
 
+   For 32-bit desktop...
+
+3. From a command shell, type : wget https://github.com/chundermike/rpi-fruitbox-v2/raw/main/install_fruitbox_pi4_32
+4. From a command shell, type : chmod +x ./install_fruitbox_pi4_32
+5. From a command shell, type : ./install_fruitbox_pi4_32
+
     
-For Raspberry Pi versions Zero through 3 :
+For Raspberry Pi versions Zero through 3, only a Butser Lite (not Desktop) version is avaialable :
 
 1. It is recommended to start from a fresh OS install (latest Raspbian Buster release)
    Note that due to sound issues on the latest OS release (Bullseye, Debian version 11), fruitbox requires the Legacy (Buster) OS ...
