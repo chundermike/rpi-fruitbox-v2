@@ -7,7 +7,7 @@
 
 sudo apt-get update --allow-releaseinfo-change
 
-# Assumes you have downloaded (wget https://codeload.github.com/chundermike/rpi-fruitbox/zip/master)
+# Assumes you have downloaded (wget https://codeload.github.com/chundermike/rpi-fruitbox-v2/zip/main)
 # and unzipped fruitbox master into the pi home directory and run apt-get update.
 
 ############################################################
