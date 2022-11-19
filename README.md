@@ -48,6 +48,12 @@ Steps 6 to 8 below are for all Raspberry Pi versions ...
    then type : ./fruitbox
    
 
+If you are updating to a newer version of fruitbox, you can either do it through the Main Menu (TAB on the
+keyboard, then choose Software Update), or using the command ...
+
+  ./install_fruitbox --update
+
+
 For help, from a command line, enter :
 
   ./fruitbox --help
