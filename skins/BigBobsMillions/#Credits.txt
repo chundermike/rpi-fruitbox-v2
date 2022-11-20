@@ -1,0 +1,5 @@
+For the man who has everything (or should I say every song). I present to you - Big Bob's Millions. A fun experiment to see what Fruitbox is capable of. Also, this was intended to be used as a template for folks to build their own themed skin.
+
+This skin will push the limits of your Pi3, because of that, I recommend a Pi4 with a couple gigs of memory. 
+
+A skin By Jay's Arcade.
