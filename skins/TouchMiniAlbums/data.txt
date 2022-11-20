@@ -1,0 +1,4 @@
+${IF_ANY_COMING_UP}${COMING_UP_NUM_SONGS} Songs Remaining in Queue
+${IF_ANY_COMING_UP}Time Remaining - ${COMING_UP_TOTAL_TIME}
+${IF_ANY_COMING_UP}Total Albums in Library ${NUM_TITLE_STRIPS}
+${IF_ANY_COMING_UP}Total Songs in Library ${NUM_SONGS}
