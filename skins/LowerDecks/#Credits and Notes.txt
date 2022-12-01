@@ -1,0 +1,9 @@
+A skin by Jay's Arcade
+
+To enable touchscreen interface, select ..skins/LowerDecks/touch_fruitbox.cfg instead of ..skins/LowerDecks/fruitbox.cfg.
+
+Inspired by the DWJukebox LCARS skin by Chris La Mantia.... and Star Trek of course. 
+
+The Spectrum Analyzer design was inspired by (and copied from) the user pashaak at Deviant Art. Also much of the design of the skin was taken from there. https://www.deviantart.com/pashaak/art/1-904657400
+
+The idea to name this theme Lower Decks was inspired by the Star Trek cartoon Lower Decks. The color pallette and some of the graphics were borrowed from www.thelcars.com. https://www.thelcars.com/themes/lower-decks.html
