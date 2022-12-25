@@ -1,0 +1,1 @@
+                            ${NUM_SONGS}                                                                                                         ${FIRST_VISIBLE_TITLE_STRIP}-${LAST_VISIBLE_TITLE_STRIP}
