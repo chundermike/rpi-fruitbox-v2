@@ -25,7 +25,7 @@ For Raspberry Pi version 4 (recommended) :
 5. From a command shell, type : ./install_fruitbox_pi4_32
 
     
-For Raspberry Pi versions Zero through 3, only a Butser Lite (not Desktop) version is avaialable :
+For Raspberry Pi versions Zero through 3, only a Buster Lite (not Desktop) version is avaialable :
 
 1. It is recommended to start from a fresh OS install (latest Raspbian Buster release)
    Note that due to sound issues on the latest OS release (Bullseye, Debian version 11), fruitbox requires the Legacy (Buster) OS ...
