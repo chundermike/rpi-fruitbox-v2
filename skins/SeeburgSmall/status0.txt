@@ -1,0 +1,9 @@
+
+
+${IF_SONG_PLAYING}** NOW PLAYING **
+
+${IF_SONG_PLAYING}${NOW_PLAYING_TITLE}
+${IF_SONG_PLAYING}by
+${IF_SONG_PLAYING}${NOW_PLAYING_ARTIST}
+${IF_SONG_PLAYING}${NOW_PLAYING_ELAPSED_TIME} / ${NOW_PLAYING_LENGTH}  
+                                                                                                                 
