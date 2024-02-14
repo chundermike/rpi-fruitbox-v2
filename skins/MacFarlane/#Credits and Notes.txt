@@ -1,3 +1,7 @@
-A touchscreen skin by Jay's Arcade.
+A touchscreen freeplay mode skin by Jay's Arcade.
 
 Inspired by the computer interfaces seen in the television series, The Orville, by creator Seth MacFarlane.
+
+Freeplay mode?
+This skin was made for touchscreen use. It was also designed with FreePlay mode in mind, although it will
+also work with coins or simulated coins via button press. 
