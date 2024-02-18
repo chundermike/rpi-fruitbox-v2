@@ -1,0 +1,6 @@
+** COMING UP **
+
+${COMING_UP_NUM_SONGS} Tracks
+${COMING_UP_TOTAL_TIME} 
+
+

@@ -1,0 +1,7 @@
+${IF_PAUSED}** PLAYBACK PAUSED **${ELSE}${IF_SONG_PLAYING}** NOW PLAYING **
+
+${IF_SONG_PLAYING}'${NOW_PLAYING_TITLE}' 
+${IF_SONG_PLAYING}by 
+${IF_SONG_PLAYING}${NOW_PLAYING_ARTIST}
+  
+                                                                                                                        
