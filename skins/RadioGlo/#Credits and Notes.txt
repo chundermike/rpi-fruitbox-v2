@@ -1,5 +1,0 @@
-A Jay's Arcade Skin
-
-This skin was based off of previous work by Mike Kingsley on his RadiOldie skin and the design I used was borrowed from http://mickx.com/work/work-content/on-air-radio-ui-design-content.php. I essentially had to re-create the whole image to work with Fruitbox, so this is really sort of a dis-claimer that I can't take credit for the graphic design itself.
-
-This skin will play your mp3s, but it is especially nice for playing internet radio stations. As Mike suggests in the Fruitbox User guide, a good source of internet radio stations can be found at https://www.internet-radio.com/. I've found that not all station links are created equal though so you might want to test each one in Fruitbox before you commit. I've noticed if the stream doesn't play, sometimes you can open the .pls file in a text editor. If the stream address ends in something like (listen.pls?sid=1), you might have luck by removing that and adding the word stream in it's place. Sometimes this will allow Fruitbox to play the stream.
