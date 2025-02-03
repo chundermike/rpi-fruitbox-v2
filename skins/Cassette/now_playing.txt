@@ -1,0 +1,7 @@
+
+${IF_PAUSED}** PLAYBACK PAUSED **${ELSE}${IF_SONG_PLAYING}${NOW_PLAYING_TITLE}${ELSE}${IF_NOT_SONG_PLAYING}${IF_NOT_SONG_LOADING}${IF_TIMER_HI}** MAKE A SELECTION **${ELSE}${IF_NOT_FREEPLAY}${IF_NO_CREDITS}** INSERT COINS **
+${IF_SONG_PLAYING}by 
+${IF_SONG_PLAYING}${NOW_PLAYING_ARTIST}
+
+${IF_SONG_PLAYING}${NOW_PLAYING_ELAPSED_TIME} / ${NOW_PLAYING_LENGTH}  
+                                                                                                                        
