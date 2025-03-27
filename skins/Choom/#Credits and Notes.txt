@@ -1,0 +1,5 @@
+A reskin by TojiChiba based on "MacFarlane" by Jay's Arcade
+
+Designed for, and runs best on Raspberry Pi4 - but will also run on a Pi3.
+
+Inspired by the computer interfaces seen in Cyberpunk 2077 by CD Project Red.
