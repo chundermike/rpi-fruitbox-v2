@@ -1,0 +1,4 @@
+# fruitbox version 2.04 database file
+# song entry format is Filename|SongTitle|Artist|AlbumTitle|AlbumArtist|Year|TrackNumber|LengthInSeconds|Publisher|ISRC|CustomTag[]|Genre
+load_disc.ogv|load_disc|Unknown Artist|Unknown Album|Unknown Album Artist|Unknown Year|0|0|Unknown Publisher|||Unknown
+unload_disc.ogv|unload_disc|Unknown Artist|Unknown Album|Unknown Album Artist|Unknown Year|0|0|Unknown Publisher|||Unknown
