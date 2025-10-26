@@ -1,0 +1,26 @@
+DAKBOX
+A skin by GringoSM
+
+Design inspired by Jays Arcade - Album Player
+
+This is a touch screen skin for a coin operated jukebox. Ensure your music 
+is in separate album folders, with each folder having a folder.jpg. Many 
+aspects, such as the bar logo, can be changed to suit your needs.
+
+EQUIPMENT:
+
+Rpi4B
+
+10.1" 12800x800 Touch Screen
+	Geeekpi version has Rpi mount on back of screen. Allows for 
+	easy connection.
+
+HX-916 Multi Coin Acceptor
+	Included denial of coins when queue is full.
+
+Milfare RC522 RFID Card Reader
+	Allows for authorized cards to add credits.
+
+LED Controller with mic and External 5V PS
+	Used a MOSFET diode circuit to activate when a song is playing. 
+
