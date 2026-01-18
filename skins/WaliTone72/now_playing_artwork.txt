@@ -1,0 +1,4 @@
+${NOW_PLAYING_ARTWORK}
+
+
+
