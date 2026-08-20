@@ -1,6 +1,12 @@
 # rpi-fruitbox-v2
 Raspberry Pi fruitbox (Version 2)
 
+Note : this version has now been superceded by version 3. Please find version 3 here :
+
+https://github.com/chundermike/fruitbox-v3
+
+(v2 skins are compatible with v3)
+
 fruitbox is a customisable MP3 player for the Raspberry Pi, allowing the user to create the look and feel of classic jukeboxes.
 fruitbox works on all Raspberry Pi devices, but runs better on the higher spec (quad core) machines (i.e. Models 2 and above),
 especially if playing music videos.
